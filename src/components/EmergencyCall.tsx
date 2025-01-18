@@ -45,23 +45,11 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
       setCallDuration(prev => prev + 1);
     }, 1000);
 
-    // Listen for conversation status changes
-    const checkStatus = setInterval(() => {
-      if (conversation.status === 'disconnected' && !isConnecting) {
-        toast({
-          title: "Call Ended",
-          description: "The emergency operator has ended the call",
-        });
-        onEnd();
-      }
-    }, 1000);
-
     return () => {
       clearInterval(timer);
-      clearInterval(checkStatus);
       conversation.endSession();
     };
-  }, [conversation, onEnd, toast, isConnecting]);
+  }, []);
 
   const handleEndCall = async () => {
     await conversation.endSession();
