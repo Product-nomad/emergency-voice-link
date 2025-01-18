@@ -36,7 +36,7 @@ const EmergencyDialer = ({ onCall }: { onCall: (number: string) => void }) => {
 
       <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
         <div className="text-3xl font-bold text-center mb-6 h-12">
-          {number || <span className="text-gray-400">Enter Number</span>}
+          {number}
         </div>
 
         <div className="grid grid-cols-3 gap-4 mb-6">
