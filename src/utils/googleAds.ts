@@ -2,7 +2,7 @@
 export const trackConversion = (phoneNumber: string) => {
   if (typeof window.gtag !== 'undefined') {
     window.gtag('event', 'conversion', {
-      'send_to': 'AW-CONVERSION_ID/CONVERSION_LABEL',
+      'send_to': 'ca-pub-1138854450517299',
       'value': 1.0,
       'currency': 'USD',
       'transaction_id': Date.now().toString()

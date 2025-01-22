@@ -10,7 +10,8 @@ const Index = () => {
     // Load Google Ads script
     const script = document.createElement('script');
     script.async = true;
-    script.src = 'https://www.googletagmanager.com/gtag/js?id=AW-CONVERSION_ID';
+    script.crossOrigin = "anonymous";
+    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1138854450517299';
     document.head.appendChild(script);
 
     script.onload = () => {
@@ -19,7 +20,7 @@ const Index = () => {
         window.dataLayer.push(args);
       }
       gtag('js', new Date());
-      gtag('config', 'AW-CONVERSION_ID');
+      gtag('config', 'ca-pub-1138854450517299');
     };
 
     return () => {
