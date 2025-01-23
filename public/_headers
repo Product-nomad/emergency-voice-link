@@ -1,6 +1,5 @@
 /*
-  Content-Type: application/javascript
-  Access-Control-Allow-Origin: *
+  Content-Type: text/html
 /*.js
   Content-Type: application/javascript
 /*.mjs
@@ -11,3 +10,8 @@
   Content-Type: application/javascript
 /*.tsx
   Content-Type: application/javascript
+/*.css
+  Content-Type: text/css
+/*.json
+  Content-Type: application/json
+  Access-Control-Allow-Origin: *
