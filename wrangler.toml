@@ -3,12 +3,17 @@ compatibility_date = "2024-01-01"
 
 [build]
 command = "npm run build"
+output_dir = "dist"
 
 [site]
 bucket = "dist"
 
+[build.environment]
+NODE_VERSION = "20"
+
+# Required for Cloudflare Pages
 [build.upload]
 format = "directory"
 
-[build.environment]
-NODE_VERSION = "20"
+# Specify the build output directory for Pages
+pages_build_output_dir = "dist"
