@@ -1,6 +1,7 @@
 import React, { useCallback, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { Phone } from 'lucide-react';
 
 interface EmergencyDialerProps {
   onCall: (number: string) => void;
