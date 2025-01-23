@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, memo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Phone, PhoneOff, Mic } from 'lucide-react';
@@ -9,22 +9,11 @@ interface EmergencyCallProps {
   onEnd: () => void;
 }
 
-const formatDuration = (seconds: number) => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-};
-
-const EmergencyCall: React.FC<EmergencyCallProps> = ({ number, onEnd }) => {
+const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
   const { toast } = useToast();
   const [callDuration, setCallDuration] = useState(0);
   const conversation = useConversation();
   const [isConnecting, setIsConnecting] = useState(true);
-
-  const handleEndCall = useCallback(async () => {
-    await conversation.endSession();
-    onEnd();
-  }, [conversation, onEnd]);
 
   useEffect(() => {
     const startCall = async () => {
@@ -60,7 +49,18 @@ const EmergencyCall: React.FC<EmergencyCallProps> = ({ number, onEnd }) => {
       clearInterval(timer);
       conversation.endSession();
     };
-  }, [conversation, onEnd, toast]);
+  }, []);
+
+  const handleEndCall = async () => {
+    await conversation.endSession();
+    onEnd();
+  };
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className="w-full max-w-md mx-auto p-6">
@@ -102,4 +102,4 @@ const EmergencyCall: React.FC<EmergencyCallProps> = ({ number, onEnd }) => {
   );
 };
 
-export default memo(EmergencyCall);
+export default EmergencyCall;

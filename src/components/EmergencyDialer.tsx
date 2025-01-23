@@ -1,32 +1,19 @@
-import React, { useCallback, memo } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { Phone, PhoneOff, Mic } from 'lucide-react';
 
-interface EmergencyDialerProps {
-  onCall: (number: string) => void;
-}
-
-const DialerButton = memo(({ digit, onClick }: { digit: string | number; onClick: (digit: string) => void }) => (
-  <Button
-    onClick={() => onClick(digit.toString())}
-    className="emergency-button h-14 text-xl"
-    variant="outline"
-  >
-    {digit}
-  </Button>
-));
-
-DialerButton.displayName = 'DialerButton';
-
-const EmergencyDialer: React.FC<EmergencyDialerProps> = ({ onCall }) => {
-  const [number, setNumber] = React.useState('');
+const EmergencyDialer = ({ onCall }: { onCall: (number: string) => void }) => {
+  const [number, setNumber] = useState('');
   const { toast } = useToast();
 
-  const handleNumberClick = useCallback((digit: string) => {
-    setNumber(prev => prev.length < 3 ? prev + digit : prev);
-  }, []);
+  const handleNumberClick = (digit: string) => {
+    if (number.length < 3) {
+      setNumber(prev => prev + digit);
+    }
+  };
 
-  const handleCall = useCallback(() => {
+  const handleCall = () => {
     if (number === '999' || number === '911') {
       onCall(number);
     } else {
@@ -36,11 +23,9 @@ const EmergencyDialer: React.FC<EmergencyDialerProps> = ({ onCall }) => {
         variant: "destructive"
       });
     }
-  }, [number, onCall, toast]);
+  };
 
-  const clearNumber = useCallback(() => setNumber(''), []);
-
-  const dialPadNumbers = React.useMemo(() => [1, 2, 3, 4, 5, 6, 7, 8, 9, '*', 0, '#'], []);
+  const clearNumber = () => setNumber('');
 
   return (
     <div className="w-full max-w-md mx-auto p-6">
@@ -56,12 +41,15 @@ const EmergencyDialer: React.FC<EmergencyDialerProps> = ({ onCall }) => {
         </div>
 
         <div className="grid grid-cols-3 gap-4 mb-6">
-          {dialPadNumbers.map((digit) => (
-            <DialerButton
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, '*', 0, '#'].map((digit) => (
+            <Button
               key={digit}
-              digit={digit}
-              onClick={handleNumberClick}
-            />
+              onClick={() => handleNumberClick(digit.toString())}
+              className="emergency-button h-14 text-xl"
+              variant="outline"
+            >
+              {digit}
+            </Button>
           ))}
         </div>
 
@@ -85,4 +73,4 @@ const EmergencyDialer: React.FC<EmergencyDialerProps> = ({ onCall }) => {
   );
 };
 
-export default memo(EmergencyDialer);
+export default EmergencyDialer;
