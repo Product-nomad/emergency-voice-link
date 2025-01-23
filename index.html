@@ -9,18 +9,15 @@
     <meta property="og:image" content="/og-image.png" />
     <script>
       window.addEventListener('message', function(event) {
-        // Accept messages from any origin for development purposes
-        // In production, you should validate the origin
         if (event.data && typeof event.data === 'object') {
           window.postMessage(event.data, '*');
         }
       });
     </script>
   </head>
-
   <body>
     <div id="root"></div>
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module" crossorigin="anonymous"></script>
+    <script type="module" src="https://cdn.gpteng.co/gptengineer.js" crossorigin="anonymous"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
