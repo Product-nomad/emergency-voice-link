@@ -32,6 +32,7 @@ const EmergencyDialer = ({ onCall }: { onCall: (number: string) => void }) => {
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Emergency Call Simulator</h1>
         <p className="text-gray-600">Dial 999 or 911</p>
+        <p className="text-sm text-red-500 mt-1">For training purposes only</p>
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
