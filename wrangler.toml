@@ -10,3 +10,10 @@ bucket = "./dist"
 
 [build.upload]
 format = "service-worker"
+
+[[routes]]
+pattern = "/api/*"
+script = "api"
+
+[env.production]
+workers_dev = true
