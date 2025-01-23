@@ -7,7 +7,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
-import emailjs from '@emailjs/browser';
 
 const formSchema = z.object({
   feedback: z.string().min(10, {
@@ -26,31 +25,13 @@ const Feedback = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      await emailjs.send(
-        'YOUR_SERVICE_ID', // Replace with your EmailJS service ID
-        'YOUR_TEMPLATE_ID', // Replace with your EmailJS template ID
-        {
-          to_email: 'simon.newton@consultant.com',
-          message: values.feedback,
-          from_name: 'Emergency Voice Link User',
-        },
-        'YOUR_PUBLIC_KEY' // Replace with your EmailJS public key
-      );
-
-      toast({
-        title: "Feedback Submitted",
-        description: "Thank you for your feedback!",
-      });
-      navigate('/');
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to send feedback. Please try again later.",
-        variant: "destructive",
-      });
-    }
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log(values);
+    toast({
+      title: "Feedback Submitted",
+      description: "Thank you for your feedback!",
+    });
+    navigate('/');
   };
 
   return (
