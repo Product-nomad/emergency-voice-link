@@ -5,7 +5,7 @@ compatibility_date = "2024-01-01"
 command = "npm run build"
 
 [site]
-bucket = "./dist"
+bucket = "dist"
 
 [build.environment]
 NODE_VERSION = "20"
