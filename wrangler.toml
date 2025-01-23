@@ -8,10 +8,6 @@ command = "npm install && npm run build"
 bucket = "./dist"
 pages_build_output_dir = "dist"
 
-# Remove service worker format since we're using Pages
-# [build.upload]
-# format = "service-worker"
-
 [[routes]]
 pattern = "/api/*"
 script = "api"
