@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { Phone, PhoneOff, Mic } from 'lucide-react';
+import { Phone, PhoneOff, Mic, MicOff } from 'lucide-react';
 import { useConversation } from '@11labs/react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface EmergencyCallProps {
   number: string;
@@ -14,12 +15,25 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
   const [callDuration, setCallDuration] = useState(0);
   const conversation = useConversation();
   const [isConnecting, setIsConnecting] = useState(true);
+  const [micPermission, setMicPermission] = useState<boolean | null>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
     const startCall = async () => {
       try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Request microphone access
+        const audioStream = await navigator.mediaDevices.getUserMedia({ 
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
         
+        setStream(audioStream);
+        setMicPermission(true);
+        
+        // Start the conversation session
         await conversation.startSession({
           agentId: 'li8AdGwCO2tlhj8KMJBx'
         });
@@ -30,12 +44,13 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
           description: "You are now connected to an emergency operator",
         });
       } catch (error) {
+        console.error('Microphone or connection error:', error);
+        setMicPermission(false);
         toast({
           title: "Connection Error",
-          description: "Failed to connect to emergency services. Please try again.",
+          description: error instanceof Error ? error.message : "Failed to connect. Please check your microphone permissions.",
           variant: "destructive"
         });
-        onEnd();
       }
     };
 
@@ -47,11 +62,17 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
 
     return () => {
       clearInterval(timer);
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
       conversation.endSession();
     };
   }, []);
 
   const handleEndCall = async () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
     await conversation.endSession();
     onEnd();
   };
@@ -61,6 +82,25 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  if (micPermission === false) {
+    return (
+      <div className="w-full max-w-md mx-auto p-6">
+        <Alert variant="destructive">
+          <AlertDescription>
+            Microphone access is required for emergency calls. Please enable microphone access in your browser settings and try again.
+          </AlertDescription>
+        </Alert>
+        <Button
+          onClick={onEnd}
+          className="w-full mt-4"
+          variant="secondary"
+        >
+          Back
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md mx-auto p-6">
@@ -80,7 +120,11 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
               </div>
             ) : (
               <div className="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center">
-                <Mic className="h-12 w-12 text-white" />
+                {micPermission ? (
+                  <Mic className="h-12 w-12 text-white" />
+                ) : (
+                  <MicOff className="h-12 w-12 text-white" />
+                )}
               </div>
             )}
           </div>
