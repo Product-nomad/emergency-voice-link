@@ -12,9 +12,10 @@ export default defineConfig(({ mode }) => ({
     outDir: 'dist',
     rollupOptions: {
       output: {
-        entryFileNames: 'assets/[name].[hash].js',
-        chunkFileNames: 'assets/[name].[hash].js',
-        assetFileNames: 'assets/[name].[hash].[ext]'
+        // Ensure proper MIME types for JavaScript modules
+        entryFileNames: 'assets/[name]-[hash].mjs',
+        chunkFileNames: 'assets/[name]-[hash].mjs',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     }
   },
