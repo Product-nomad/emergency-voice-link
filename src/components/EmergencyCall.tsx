@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { Phone, PhoneOff, Mic, MicOff } from 'lucide-react';
+import { PhoneOff } from 'lucide-react';
 import { useConversation } from '@11labs/react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import CallStatus from './CallStatus';
+import MicrophoneError from './MicrophoneError';
 
 interface EmergencyCallProps {
   number: string;
@@ -18,10 +19,25 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
   const [micPermission, setMicPermission] = useState<boolean | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
 
+  const handleEndCall = useCallback(async () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+    await conversation.endSession();
+    onEnd();
+  }, [stream, conversation, onEnd]);
+
+  const formatDuration = useCallback((seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }, []);
+
   useEffect(() => {
+    let timer: NodeJS.Timeout;
+    
     const startCall = async () => {
       try {
-        // Request microphone access
         const audioStream = await navigator.mediaDevices.getUserMedia({ 
           audio: {
             echoCancellation: true,
@@ -33,7 +49,6 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
         setStream(audioStream);
         setMicPermission(true);
         
-        // Start the conversation session
         await conversation.startSession({
           agentId: 'li8AdGwCO2tlhj8KMJBx'
         });
@@ -55,10 +70,7 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
     };
 
     startCall();
-
-    const timer = setInterval(() => {
-      setCallDuration(prev => prev + 1);
-    }, 1000);
+    timer = setInterval(() => setCallDuration(prev => prev + 1), 1000);
 
     return () => {
       clearInterval(timer);
@@ -67,39 +79,10 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
       }
       conversation.endSession();
     };
-  }, []);
-
-  const handleEndCall = async () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-    }
-    await conversation.endSession();
-    onEnd();
-  };
-
-  const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+  }, [conversation, toast]);
 
   if (micPermission === false) {
-    return (
-      <div className="w-full max-w-md mx-auto p-6">
-        <Alert variant="destructive">
-          <AlertDescription>
-            Microphone access is required for emergency calls. Please enable microphone access in your browser settings and try again.
-          </AlertDescription>
-        </Alert>
-        <Button
-          onClick={onEnd}
-          className="w-full mt-4"
-          variant="secondary"
-        >
-          Back
-        </Button>
-      </div>
-    );
+    return <MicrophoneError onBack={onEnd} />;
   }
 
   return (
@@ -112,21 +95,10 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
 
         <div className="space-y-6">
           <div className="flex justify-center">
-            {isConnecting ? (
-              <div className="pulse">
-                <div className="w-24 h-24 rounded-full bg-red-500 flex items-center justify-center">
-                  <Phone className="h-12 w-12 text-white" />
-                </div>
-              </div>
-            ) : (
-              <div className="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center">
-                {micPermission ? (
-                  <Mic className="h-12 w-12 text-white" />
-                ) : (
-                  <MicOff className="h-12 w-12 text-white" />
-                )}
-              </div>
-            )}
+            <CallStatus 
+              isConnecting={isConnecting}
+              micPermission={micPermission}
+            />
           </div>
 
           <div className="text-center">
