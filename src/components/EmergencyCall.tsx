@@ -14,32 +14,14 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
   const [callDuration, setCallDuration] = useState(0);
   const conversation = useConversation();
   const [isConnecting, setIsConnecting] = useState(true);
-  const [stream, setStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
     const startCall = async () => {
       try {
-        // Safari and iOS Chrome specific audio constraints
-        const audioConstraints = {
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true,
-            sampleRate: 48000,
-          }
-        };
-
-        const mediaStream = await navigator.mediaDevices.getUserMedia(audioConstraints);
-        setStream(mediaStream);
+        await navigator.mediaDevices.getUserMedia({ audio: true });
         
         await conversation.startSession({
-          agentId: 'li8AdGwCO2tlhj8KMJBx',
-          overrides: {
-            agent: {
-              firstMessage: `Emergency operator connected. How can I help you?`,
-              language: 'en'
-            }
-          }
+          agentId: 'li8AdGwCO2tlhj8KMJBx'
         });
 
         setIsConnecting(false);
@@ -48,22 +30,9 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
           description: "You are now connected to an emergency operator",
         });
       } catch (error) {
-        console.error('Emergency call error:', error);
-        let errorMessage = "Failed to connect to emergency services. ";
-        
-        if (error instanceof Error) {
-          if (error.name === 'NotAllowedError') {
-            errorMessage += "Please allow microphone access and try again.";
-          } else if (error.name === 'NotFoundError') {
-            errorMessage += "No microphone found. Please check your device settings.";
-          } else {
-            errorMessage += error.message;
-          }
-        }
-
         toast({
           title: "Connection Error",
-          description: errorMessage,
+          description: "Failed to connect to emergency services. Please try again.",
           variant: "destructive"
         });
         onEnd();
@@ -78,17 +47,11 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
 
     return () => {
       clearInterval(timer);
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
       conversation.endSession();
     };
   }, []);
 
   const handleEndCall = async () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-    }
     await conversation.endSession();
     onEnd();
   };
