@@ -19,7 +19,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center relative">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center relative p-4">
       {activeCall ? (
         <EmergencyCall number={activeCall} onEnd={handleEndCall} />
       ) : (
@@ -27,7 +27,7 @@ const Index = () => {
       )}
       <Button
         onClick={() => navigate('/feedback')}
-        className="fixed bottom-4 right-4"
+        className="fixed bottom-4 right-4 z-10"
         variant="outline"
       >
         Submit Feedback
