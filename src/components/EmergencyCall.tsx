@@ -14,7 +14,35 @@ interface EmergencyCallProps {
 const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
   const { toast } = useToast();
   const [callDuration, setCallDuration] = useState(0);
-  const conversation = useConversation();
+  const conversation = useConversation({
+    onConnect: () => {
+      console.log('Connected to agent');
+      setIsConnecting(false);
+      toast({
+        title: "Connected to Emergency Services",
+        description: "You are now connected to an emergency operator",
+      });
+    },
+    onDisconnect: () => {
+      console.log('Disconnected from agent');
+      toast({
+        title: "Call Ended",
+        description: "The emergency call has ended",
+      });
+    },
+    onError: (error) => {
+      console.error('Agent connection error:', error);
+      toast({
+        title: "Connection Error",
+        description: "Failed to connect to emergency services. Please try again.",
+        variant: "destructive"
+      });
+      handleEndCall();
+    },
+    onMessage: (message) => {
+      console.log('Received message:', message);
+    }
+  });
   const [isConnecting, setIsConnecting] = useState(true);
   const [micPermission, setMicPermission] = useState<boolean | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -38,6 +66,7 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
     
     const startCall = async () => {
       try {
+        // First get microphone permission
         const audioStream = await navigator.mediaDevices.getUserMedia({ 
           audio: {
             echoCancellation: true,
@@ -49,15 +78,17 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
         setStream(audioStream);
         setMicPermission(true);
         
+        // Then connect to the agent
         await conversation.startSession({
-          agentId: 'li8AdGwCO2tlhj8KMJBx'
+          agentId: 'li8AdGwCO2tlhj8KMJBx',
+          overrides: {
+            agent: {
+              language: 'en',
+              firstMessage: `Emergency ${number} operator. What is your emergency?`
+            }
+          }
         });
 
-        setIsConnecting(false);
-        toast({
-          title: "Connected to Emergency Services",
-          description: "You are now connected to an emergency operator",
-        });
       } catch (error) {
         console.error('Microphone or connection error:', error);
         setMicPermission(false);
@@ -79,7 +110,7 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
       }
       conversation.endSession();
     };
-  }, [conversation, toast]);
+  }, [conversation, toast, number]);
 
   if (micPermission === false) {
     return <MicrophoneError onBack={onEnd} />;
