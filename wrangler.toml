@@ -3,6 +3,7 @@ compatibility_date = "2024-01-01"
 
 [build]
 command = "npm run build"
+watch_dir = "src"
 
 [site]
 bucket = "dist"
@@ -16,3 +17,7 @@ format = "directory"
 
 # Specify the build output directory for Pages
 build_output_dir = "dist"
+
+# Add caching configuration
+[cache]
+browser_TTL = 31536000 # 1 year for static assets

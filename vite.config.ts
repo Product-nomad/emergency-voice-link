@@ -17,7 +17,10 @@ export default defineConfig(({ mode }) => ({
         chunkFileNames: 'assets/[name]-[hash].mjs',
         assetFileNames: 'assets/[name]-[hash].[ext]'
       }
-    }
+    },
+    // Optimize chunk size for serverless
+    chunkSizeWarningLimit: 1000,
+    sourcemap: true
   },
   plugins: [
     react(),
