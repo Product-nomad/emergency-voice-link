@@ -1,10 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { PhoneOff } from 'lucide-react';
+import { Phone, PhoneOff, Mic } from 'lucide-react';
 import { useConversation } from '@11labs/react';
-import CallStatus from './CallStatus';
-import MicrophoneError from './MicrophoneError';
 
 interface EmergencyCallProps {
   number: string;
@@ -14,107 +12,55 @@ interface EmergencyCallProps {
 const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
   const { toast } = useToast();
   const [callDuration, setCallDuration] = useState(0);
-  const conversation = useConversation({
-    onConnect: () => {
-      console.log('Connected to agent');
-      setIsConnecting(false);
-      toast({
-        title: "Connected to Emergency Services",
-        description: "You are now connected to an emergency operator",
-      });
-    },
-    onDisconnect: () => {
-      console.log('Disconnected from agent');
-      toast({
-        title: "Call Ended",
-        description: "The emergency call has ended",
-      });
-    },
-    onError: (error) => {
-      console.error('Agent connection error:', error);
-      toast({
-        title: "Connection Error",
-        description: "Failed to connect to emergency services. Please try again.",
-        variant: "destructive"
-      });
-      handleEndCall();
-    },
-    onMessage: (message) => {
-      console.log('Received message:', message);
-    }
-  });
+  const conversation = useConversation();
   const [isConnecting, setIsConnecting] = useState(true);
-  const [micPermission, setMicPermission] = useState<boolean | null>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-
-  const handleEndCall = useCallback(async () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-    }
-    await conversation.endSession();
-    onEnd();
-  }, [stream, conversation, onEnd]);
-
-  const formatDuration = useCallback((seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  }, []);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    
     const startCall = async () => {
       try {
-        // First get microphone permission
-        const audioStream = await navigator.mediaDevices.getUserMedia({ 
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true
-          }
-        });
+        await navigator.mediaDevices.getUserMedia({ audio: true });
         
-        setStream(audioStream);
-        setMicPermission(true);
-        
-        // Then connect to the agent
         await conversation.startSession({
-          agentId: 'li8AdGwCO2tlhj8KMJBx',
-          overrides: {
-            agent: {
-              language: 'en',
-              firstMessage: `Emergency ${number} operator. What is your emergency?`
-            }
-          }
+          agentId: 'li8AdGwCO2tlhj8KMJBx'
         });
 
+        setIsConnecting(false);
+        toast({
+          title: "Connected to Emergency Services",
+          description: "You are now connected to an emergency operator",
+        });
       } catch (error) {
-        console.error('Microphone or connection error:', error);
-        setMicPermission(false);
         toast({
           title: "Connection Error",
-          description: error instanceof Error ? error.message : "Failed to connect. Please check your microphone permissions.",
+          description: "Failed to connect to emergency services. Please try again.",
           variant: "destructive"
         });
+        onEnd();
       }
     };
 
     startCall();
-    timer = setInterval(() => setCallDuration(prev => prev + 1), 1000);
+
+    const timer = setInterval(() => {
+      setCallDuration(prev => prev + 1);
+    }, 1000);
 
     return () => {
       clearInterval(timer);
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
       conversation.endSession();
     };
-  }, [conversation, toast, number]);
+  }, []);
 
-  if (micPermission === false) {
-    return <MicrophoneError onBack={onEnd} />;
-  }
+  const handleEndCall = async () => {
+    await conversation.endSession();
+    onEnd();
+  };
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className="w-full max-w-md mx-auto p-6">
@@ -126,10 +72,17 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
 
         <div className="space-y-6">
           <div className="flex justify-center">
-            <CallStatus 
-              isConnecting={isConnecting}
-              micPermission={micPermission}
-            />
+            {isConnecting ? (
+              <div className="pulse">
+                <div className="w-24 h-24 rounded-full bg-red-500 flex items-center justify-center">
+                  <Phone className="h-12 w-12 text-white" />
+                </div>
+              </div>
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center">
+                <Mic className="h-12 w-12 text-white" />
+              </div>
+            )}
           </div>
 
           <div className="text-center">
