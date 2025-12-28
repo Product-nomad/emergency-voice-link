@@ -8,6 +8,7 @@ const footerLinks = [
   { to: '/protocol', label: 'Dispatcher Protocol' },
   { to: '/faq', label: 'FAQ' },
   { to: '/resources', label: 'Resources' },
+  { to: '/about', label: 'About' },
 ];
 
 const Footer = () => {
