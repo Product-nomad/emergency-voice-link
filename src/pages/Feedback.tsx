@@ -9,9 +9,13 @@ import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
+const MAX_FEEDBACK_LENGTH = 5000;
+
 const formSchema = z.object({
   feedback: z.string().min(10, {
     message: "Feedback must be at least 10 characters.",
+  }).max(MAX_FEEDBACK_LENGTH, {
+    message: `Feedback must not exceed ${MAX_FEEDBACK_LENGTH} characters.`,
   }),
 });
 
@@ -71,10 +75,16 @@ const Feedback = () => {
                     <Textarea
                       placeholder="Tell us what you think..."
                       className="min-h-[150px]"
+                      maxLength={MAX_FEEDBACK_LENGTH}
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <div className="flex justify-between items-center">
+                    <FormMessage />
+                    <span className={`text-sm ${field.value.length > MAX_FEEDBACK_LENGTH * 0.9 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                      {field.value.length}/{MAX_FEEDBACK_LENGTH}
+                    </span>
+                  </div>
                 </FormItem>
               )}
             />
