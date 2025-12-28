@@ -62,11 +62,27 @@ const faqs = [
 ];
 
 const FAQ = () => {
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  };
+
   return (
     <Layout>
       <Helmet>
         <title>Frequently Asked Questions | 911 Call Simulator FAQ</title>
         <meta name="description" content="Common questions about the 911 Call Simulator. Learn about safety, privacy, and how to use this educational tool for emergency preparedness training." />
+        <script type="application/ld+json">
+          {JSON.stringify(faqStructuredData)}
+        </script>
       </Helmet>
 
       <div className="container mx-auto px-4 py-12 max-w-3xl">
