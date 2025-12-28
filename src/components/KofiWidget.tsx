@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 declare global {
   interface Window {
@@ -11,29 +11,36 @@ declare global {
 
 const KofiWidget = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const initialized = useRef(false);
 
   useEffect(() => {
-    // Check if script already exists
-    const existingScript = document.querySelector('script[src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"]');
+    if (initialized.current) return;
     
     const initWidget = () => {
       if (window.kofiwidget2 && containerRef.current) {
-        containerRef.current.innerHTML = '';
         window.kofiwidget2.init('Support this site', '#73b8f5', 'Q5Q41R660M');
-        const widgetHtml = window.kofiwidget2.draw();
-        if (typeof widgetHtml === 'string') {
-          containerRef.current.innerHTML = widgetHtml;
+        window.kofiwidget2.draw();
+        
+        // Move the generated widget into our container
+        const widget = document.querySelector('.btn-container');
+        if (widget && containerRef.current && !containerRef.current.contains(widget)) {
+          containerRef.current.appendChild(widget);
         }
+        initialized.current = true;
       }
     };
 
-    if (existingScript) {
+    const existingScript = document.querySelector('script[src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"]');
+    
+    if (existingScript && window.kofiwidget2) {
       initWidget();
-    } else {
+    } else if (!existingScript) {
       const script = document.createElement('script');
       script.src = 'https://storage.ko-fi.com/cdn/widget/Widget_2.js';
       script.async = true;
-      script.onload = initWidget;
+      script.onload = () => {
+        setTimeout(initWidget, 100);
+      };
       document.body.appendChild(script);
     }
   }, []);
