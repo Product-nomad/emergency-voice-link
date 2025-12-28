@@ -25,35 +25,41 @@ const About = () => {
             </p>
           </header>
 
-          {/* Author intro with LinkedIn and photo */}
-          <div className="flex items-start justify-between gap-6 mb-2">
-            <div className="flex items-center gap-3 self-end">
-              <p className="text-lg text-foreground">
-                Hi, I'm <span className="font-semibold">Simon</span>
+          {/* Profile Section - 2 Column Layout */}
+          <div className="flex flex-col-reverse md:flex-row gap-8 mb-12">
+            {/* Left Column - Text */}
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-4">
+                <h2 className="text-xl md:text-2xl font-bold text-foreground">
+                  Hi, I'm Simon
+                </h2>
+                <a
+                  href="https://www.linkedin.com/in/newton-simon/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:text-primary/80 transition-colors"
+                  aria-label="Simon's LinkedIn Profile"
+                >
+                  <Linkedin className="h-5 w-5" />
+                </a>
+              </div>
+              <p className="text-lg text-foreground/90">
+                I am a Senior Project Manager who believes that the best technology doesn't just solve business problems—it solves human ones.
               </p>
-              <a
-                href="https://www.linkedin.com/in/newton-simon/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary/80 transition-colors"
-                aria-label="Simon's LinkedIn Profile"
-              >
-                <Linkedin className="h-5 w-5" />
-              </a>
             </div>
-            <img
-              src={simonPhoto}
-              alt="Simon - Creator of 911 Call Simulator"
-              className="w-32 h-32 md:w-40 md:h-40 rounded-lg object-cover shadow-lg"
-            />
+
+            {/* Right Column - Image */}
+            <div className="flex-shrink-0">
+              <img
+                src={simonPhoto}
+                alt="Simon - Creator of 911 Call Simulator"
+                className="w-32 h-32 md:w-40 md:h-40 rounded-lg object-cover shadow-lg mx-auto md:mx-0"
+              />
+            </div>
           </div>
 
           {/* Body content */}
           <div className="prose prose-lg max-w-none text-foreground/90 space-y-6">
-            <p>
-              I am a Senior Project Manager who believes that the best technology doesn't just solve business problems—it solves human ones.
-            </p>
-
             <p>
               My career is defined by building complex enterprise systems, but this project—<strong>911 Call Simulator</strong>—was born from a much simpler, yet terrifying requirement: <strong>My own family's safety.</strong>
             </p>
