@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Home, BookOpen, FileText, Shield, HelpCircle, ExternalLink } from 'lucide-react';
+import { Menu, X, Home, BookOpen, FileText, Shield, HelpCircle, ExternalLink, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -17,6 +17,7 @@ const navLinks = [
   { to: '/protocol', label: 'Dispatcher Protocol', icon: Shield },
   { to: '/faq', label: 'FAQ', icon: HelpCircle },
   { to: '/resources', label: 'Resources', icon: ExternalLink },
+  { to: '/about', label: 'About', icon: User },
 ];
 
 const Navigation = () => {
