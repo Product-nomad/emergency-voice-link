@@ -18,10 +18,8 @@ serve(async (req) => {
     
     if (!ELEVENLABS_API_KEY) {
       console.error('ELEVENLABS_API_KEY is not set');
-      throw new Error('ELEVENLABS_API_KEY is not configured');
+      throw new Error('Service configuration error');
     }
-
-    console.log('Requesting conversation token for agent:', ELEVENLABS_AGENT_ID);
 
     // Request a signed URL for WebSocket connection
     const response = await fetch(
@@ -37,11 +35,10 @@ serve(async (req) => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('ElevenLabs API error:', response.status, errorText);
-      throw new Error(`ElevenLabs API error: ${response.status}`);
+      throw new Error('Unable to initialize conversation');
     }
 
     const data = await response.json();
-    console.log('Successfully obtained signed URL');
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -49,7 +46,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error generating conversation token:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'Unable to connect. Please try again.' }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
