@@ -41,7 +41,7 @@ const Navigation = () => {
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    className={`px-2 lg:px-3 py-2 rounded-md text-xs lg:text-sm font-medium transition-colors whitespace-nowrap ${
                       isActive
                         ? 'bg-primary text-primary-foreground'
                         : 'text-foreground hover:bg-accent'
