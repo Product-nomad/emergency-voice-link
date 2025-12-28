@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import Layout from '@/components/Layout';
+import MainLayout from '@/components/MainLayout';
 import { Phone, Flame, Shield, Heart, ExternalLink, AlertTriangle, BookOpen } from 'lucide-react';
 
 const resourceCategories = [
@@ -129,7 +129,7 @@ const resourceCategories = [
 
 const Resources = () => {
   return (
-    <Layout>
+    <MainLayout>
       <Helmet>
         <title>Emergency Resources | Helpful Numbers & Safety Links</title>
         <meta name="description" content="Essential emergency resources including Poison Control, non-emergency police lines, fire safety tips, and educational materials for families." />
@@ -241,7 +241,7 @@ const Resources = () => {
           </a>
         </div>
       </div>
-    </Layout>
+    </MainLayout>
   );
 };
 

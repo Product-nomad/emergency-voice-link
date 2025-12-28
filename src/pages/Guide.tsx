@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import Layout from '@/components/Layout';
+import MainLayout from '@/components/MainLayout';
 import { Phone, MapPin, AlertTriangle, CheckCircle, XCircle, BookOpen } from 'lucide-react';
 
 const howToStructuredData = {
@@ -69,7 +69,7 @@ const howToStructuredData = {
 
 const Guide = () => {
   return (
-    <Layout>
+    <MainLayout>
       <Helmet>
         <title>How to Teach Kids to Call 911 | Parents & Teachers Guide</title>
         <meta name="description" content="Step-by-step guide for parents and teachers on teaching children when and how to call 911. Learn safe practice methods and address memorization tips." />
@@ -295,7 +295,7 @@ const Guide = () => {
           </div>
         </section>
       </div>
-    </Layout>
+    </MainLayout>
   );
 };
 

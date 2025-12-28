@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import MainLayout from '@/components/MainLayout';
 
 const MAX_FEEDBACK_LENGTH = 5000;
 
@@ -19,7 +20,7 @@ const formSchema = z.object({
   }),
 });
 
-const Feedback = () => {
+const Feedback: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -30,7 +31,7 @@ const Feedback = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>): Promise<void> => {
     try {
       const { error } = await supabase
         .from('feedback' as any)
@@ -56,55 +57,57 @@ const Feedback = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 flex flex-col items-center justify-center">
-      <div className="w-full max-w-md space-y-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">Submit Feedback</h1>
-          <p className="text-gray-600 mt-2">We value your input to improve our service</p>
-        </div>
+    <MainLayout>
+      <div className="min-h-[calc(100vh-200px)] bg-background p-4 flex flex-col items-center justify-center">
+        <div className="w-full max-w-md space-y-6">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-foreground">Submit Feedback</h1>
+            <p className="text-muted-foreground mt-2">We value your input to improve our service</p>
+          </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="feedback"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Your Feedback</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Tell us what you think..."
-                      className="min-h-[150px]"
-                      maxLength={MAX_FEEDBACK_LENGTH}
-                      {...field}
-                    />
-                  </FormControl>
-                  <div className="flex justify-between items-center">
-                    <FormMessage />
-                    <span className={`text-sm ${field.value.length > MAX_FEEDBACK_LENGTH * 0.9 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                      {field.value.length}/{MAX_FEEDBACK_LENGTH}
-                    </span>
-                  </div>
-                </FormItem>
-              )}
-            />
-            <div className="flex gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={() => navigate('/')}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" className="w-full">
-                Submit Feedback
-              </Button>
-            </div>
-          </form>
-        </Form>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="feedback"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Your Feedback</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Tell us what you think..."
+                        className="min-h-[150px]"
+                        maxLength={MAX_FEEDBACK_LENGTH}
+                        {...field}
+                      />
+                    </FormControl>
+                    <div className="flex justify-between items-center">
+                      <FormMessage />
+                      <span className={`text-sm ${field.value.length > MAX_FEEDBACK_LENGTH * 0.9 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                        {field.value.length}/{MAX_FEEDBACK_LENGTH}
+                      </span>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <div className="flex gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => navigate('/')}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" className="w-full">
+                  Submit Feedback
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 
