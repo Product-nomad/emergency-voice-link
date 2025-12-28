@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Phone, PhoneOff, Mic } from 'lucide-react';
@@ -9,60 +9,86 @@ interface EmergencyCallProps {
   onEnd: () => void;
 }
 
+const ELEVENLABS_AGENT_ID = 'li8AdGwCO2tlhj8KMJBx';
+
 const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
   const { toast } = useToast();
   const [callDuration, setCallDuration] = useState(0);
-  const conversation = useConversation();
   const [isConnecting, setIsConnecting] = useState(true);
-  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
+
+  const conversation = useConversation({
+    onConnect: () => {
+      console.log('ElevenLabs: Connected to agent');
+      setIsConnecting(false);
+      toast({
+        title: "Connected to Emergency Services",
+        description: "You are now connected to an emergency operator",
+      });
+    },
+    onDisconnect: () => {
+      console.log('ElevenLabs: Disconnected from agent');
+    },
+    onMessage: (message) => {
+      console.log('ElevenLabs message:', message);
+    },
+    onError: (error) => {
+      console.error('ElevenLabs error:', error);
+      const errorMessage = typeof error === 'string' ? error : 'Connection failed';
+      setConnectionError(errorMessage);
+      toast({
+        title: "Connection Error",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    },
+  });
+
+  const startCall = useCallback(async () => {
+    try {
+      console.log('Requesting microphone permission...');
+      
+      // Request microphone permission
+      await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        }
+      });
+      
+      console.log('Microphone permission granted, starting ElevenLabs session...');
+      console.log('Agent ID:', ELEVENLABS_AGENT_ID);
+      
+      // Start the conversation with the public agent
+      await conversation.startSession({
+        agentId: ELEVENLABS_AGENT_ID,
+      });
+      
+      console.log('Session started successfully');
+    } catch (error) {
+      console.error('Call setup error:', error);
+      
+      let errorMessage = "Failed to connect to emergency services. ";
+      
+      if ((error as Error).name === 'NotAllowedError') {
+        errorMessage += "Please allow microphone access and try again.";
+      } else if ((error as Error).name === 'NotFoundError') {
+        errorMessage += "No microphone detected.";
+      } else {
+        errorMessage += (error as Error).message || "Please check your device settings and try again.";
+      }
+
+      setConnectionError(errorMessage);
+      toast({
+        title: "Connection Error",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    }
+  }, [conversation, toast]);
 
   useEffect(() => {
-    const startCall = async () => {
-      try {
-        // Configure audio constraints specifically for mobile
-        const constraints = {
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true,
-          },
-        };
-
-        // Request audio permission with specific constraints
-        const audioStream = await navigator.mediaDevices.getUserMedia(constraints);
-        setStream(audioStream);
-        
-        // Initialize conversation with ElevenLabs
-        await conversation.startSession({
-          agentId: 'li8AdGwCO2tlhj8KMJBx'
-        });
-
-        setIsConnecting(false);
-        toast({
-          title: "Connected to Emergency Services",
-          description: "You are now connected to an emergency operator",
-        });
-      } catch (error) {
-        console.error('Audio setup error:', error);
-        let errorMessage = "Failed to connect to emergency services. ";
-        
-        if ((error as Error).name === 'NotAllowedError') {
-          errorMessage += "Please allow microphone access and try again.";
-        } else if ((error as Error).name === 'NotFoundError') {
-          errorMessage += "No microphone detected.";
-        } else {
-          errorMessage += "Please check your device settings and try again.";
-        }
-
-        toast({
-          title: "Connection Error",
-          description: errorMessage,
-          variant: "destructive"
-        });
-        onEnd();
-      }
-    };
-
     startCall();
 
     const timer = setInterval(() => {
@@ -71,17 +97,11 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
 
     return () => {
       clearInterval(timer);
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
       conversation.endSession();
     };
   }, []);
 
   const handleEndCall = async () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-    }
     await conversation.endSession();
     onEnd();
   };
