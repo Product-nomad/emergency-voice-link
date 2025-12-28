@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Linkedin, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Layout from '@/components/Layout';
+import simonPhoto from '@/assets/simon-photo.jpeg';
 
 const About = () => {
   return (
@@ -24,20 +25,27 @@ const About = () => {
             </p>
           </header>
 
-          {/* Author intro with LinkedIn */}
-          <div className="flex items-center gap-3 mb-8">
-            <p className="text-lg text-foreground">
-              Hi, I'm <span className="font-semibold">Simon</span>
-            </p>
-            <a
-              href="https://www.linkedin.com/in/newton-simon/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:text-primary/80 transition-colors"
-              aria-label="Simon's LinkedIn Profile"
-            >
-              <Linkedin className="h-5 w-5" />
-            </a>
+          {/* Author intro with LinkedIn and photo */}
+          <div className="flex items-start justify-between gap-6 mb-8">
+            <div className="flex items-center gap-3">
+              <p className="text-lg text-foreground">
+                Hi, I'm <span className="font-semibold">Simon</span>
+              </p>
+              <a
+                href="https://www.linkedin.com/in/newton-simon/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 transition-colors"
+                aria-label="Simon's LinkedIn Profile"
+              >
+                <Linkedin className="h-5 w-5" />
+              </a>
+            </div>
+            <img
+              src={simonPhoto}
+              alt="Simon - Creator of 911 Call Simulator"
+              className="w-32 h-32 md:w-40 md:h-40 rounded-lg object-cover shadow-lg"
+            />
           </div>
 
           {/* Body content */}
