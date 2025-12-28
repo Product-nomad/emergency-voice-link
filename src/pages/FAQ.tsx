@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import Layout from '@/components/Layout';
+import MainLayout from '@/components/MainLayout';
 import { AlertTriangle } from 'lucide-react';
 import {
   Accordion,
@@ -76,7 +76,7 @@ const FAQ = () => {
   };
 
   return (
-    <Layout>
+    <MainLayout>
       <Helmet>
         <title>Frequently Asked Questions | 911 Call Simulator FAQ</title>
         <meta name="description" content="Common questions about the 911 Call Simulator. Learn about safety, privacy, and how to use this educational tool for emergency preparedness training." />
@@ -146,7 +146,7 @@ const FAQ = () => {
           </a>
         </div>
       </div>
-    </Layout>
+    </MainLayout>
   );
 };
 

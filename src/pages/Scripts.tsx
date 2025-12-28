@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import Layout from '@/components/Layout';
+import MainLayout from '@/components/MainLayout';
 import { Flame, Heart, Shield, AlertTriangle } from 'lucide-react';
 
 const scenarios = [
@@ -80,7 +80,7 @@ const scenarios = [
 
 const Scripts = () => {
   return (
-    <Layout>
+    <MainLayout>
       <Helmet>
         <title>Emergency Call Scripts | What to Say When Calling 911</title>
         <meta name="description" content="Learn exactly what to say when calling 911 for fire, medical, or police emergencies. Practice scripts and phrases for children and adults." />
@@ -193,7 +193,7 @@ const Scripts = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </MainLayout>
   );
 };
 

@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import EmergencyDialer from '@/components/EmergencyDialer';
 import EmergencyCall from '@/components/EmergencyCall';
 import { trackConversion } from '@/utils/googleAds';
-import Layout from '@/components/Layout';
+import MainLayout from '@/components/MainLayout';
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -61,7 +61,7 @@ const Index = () => {
   };
 
   return (
-    <Layout>
+    <MainLayout>
       <Helmet>
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
@@ -74,7 +74,7 @@ const Index = () => {
           <EmergencyDialer onCall={handleStartCall} />
         )}
       </div>
-    </Layout>
+    </MainLayout>
   );
 };
 

@@ -3,12 +3,12 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Layout from '@/components/Layout';
+import MainLayout from '@/components/MainLayout';
 import simonPhoto from '@/assets/simon-photo.jpeg';
 
 const About = () => {
   return (
-    <Layout>
+    <MainLayout>
       <Helmet>
         <title>About | 911 Call Simulator</title>
         <meta name="description" content="Learn about Simon, the creator of 911 Call Simulator - a safety tool built to help children learn emergency response." />
@@ -141,7 +141,7 @@ const About = () => {
           </div>
         </article>
       </div>
-    </Layout>
+    </MainLayout>
   );
 };
 

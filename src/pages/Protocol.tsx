@@ -1,11 +1,11 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import Layout from '@/components/Layout';
+import MainLayout from '@/components/MainLayout';
 import { MapPin, HelpCircle, Clipboard, Clock, Phone, Users } from 'lucide-react';
 
 const Protocol = () => {
   return (
-    <Layout>
+    <MainLayout>
       <Helmet>
         <title>What Will 911 Ask You? | Dispatcher Protocol Explained</title>
         <meta name="description" content="Learn what questions 911 dispatchers ask and why. Understand the protocol so you can be prepared to give clear, helpful information in an emergency." />
@@ -233,7 +233,7 @@ const Protocol = () => {
           </a>
         </div>
       </div>
-    </Layout>
+    </MainLayout>
   );
 };
 
