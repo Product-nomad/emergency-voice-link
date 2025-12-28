@@ -3,12 +3,79 @@ import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/Layout';
 import { Phone, MapPin, AlertTriangle, CheckCircle, XCircle, BookOpen } from 'lucide-react';
 
+const howToStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Teach Kids to Call 911",
+  "description": "Step-by-step guide for parents and teachers on teaching children when and how to call 911. Learn safe practice methods and address memorization tips.",
+  "image": "https://911callsimulator.com/og-image.png",
+  "totalTime": "PT30M",
+  "estimatedCost": {
+    "@type": "MonetaryAmount",
+    "currency": "USD",
+    "value": "0"
+  },
+  "supply": [
+    {
+      "@type": "HowToSupply",
+      "name": "Phone or tablet with microphone"
+    }
+  ],
+  "tool": [
+    {
+      "@type": "HowToTool",
+      "name": "911 Call Simulator"
+    }
+  ],
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Explain What 911 Is",
+      "text": "Tell your child that 911 is a special phone number that connects them to helpers like police, firefighters, and paramedics who come when someone is in danger.",
+      "position": 1
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Show Them How to Dial",
+      "text": "Practice finding and pressing 9-1-1 on your phone. Explain that on most phones, emergency calls work even without a password.",
+      "position": 2
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Teach Them to Stay Calm",
+      "text": "Role-play staying calm. Practice taking deep breaths before speaking. The dispatcher needs to understand them clearly.",
+      "position": 3
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Practice the Key Information",
+      "text": "Drill the essentials: their name, address, what's wrong, and where they are in the house. Keep it simple for young children.",
+      "position": 4
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Use This Simulator",
+      "text": "Let them practice with our 911 simulator. It provides a safe, realistic experience without tying up real emergency lines.",
+      "position": 5
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Review Regularly",
+      "text": "Like any skill, calling 911 requires practice. Review every few months to keep the knowledge fresh.",
+      "position": 6
+    }
+  ]
+};
+
 const Guide = () => {
   return (
     <Layout>
       <Helmet>
         <title>How to Teach Kids to Call 911 | Parents & Teachers Guide</title>
         <meta name="description" content="Step-by-step guide for parents and teachers on teaching children when and how to call 911. Learn safe practice methods and address memorization tips." />
+        <script type="application/ld+json">
+          {JSON.stringify(howToStructuredData)}
+        </script>
       </Helmet>
       
       <div className="container mx-auto px-4 py-12 max-w-4xl">
