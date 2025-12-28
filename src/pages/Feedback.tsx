@@ -29,10 +29,10 @@ const Feedback = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const { error } = await supabase
-        .from('feedback')
+        .from('feedback' as any)
         .insert([
           { message: values.feedback }
-        ]);
+        ] as any);
 
       if (error) throw error;
 
