@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      elevenlabs_rate_limit: {
+        Row: {
+          id: string
+          ip_hash: string
+          requested_at: string
+        }
+        Insert: {
+          id?: string
+          ip_hash: string
+          requested_at?: string
+        }
+        Update: {
+          id?: string
+          ip_hash?: string
+          requested_at?: string
+        }
+        Relationships: []
+      }
       feedback: {
         Row: {
           created_at: string
@@ -55,6 +73,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_old_elevenlabs_rate_limits: { Args: never; Returns: undefined }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
     }
     Enums: {
