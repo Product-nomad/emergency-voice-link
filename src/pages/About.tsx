@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Linkedin, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Navigation from '@/components/Navigation';
+import KofiWidget from '@/components/KofiWidget';
 
 const About = () => {
   return (
@@ -110,6 +111,11 @@ const About = () => {
 
           {/* Divider */}
           <hr className="my-12 border-border" />
+
+          {/* Ko-fi widget */}
+          <div className="flex justify-center mb-8">
+            <KofiWidget />
+          </div>
 
           {/* Footer action */}
           <div className="flex justify-center">

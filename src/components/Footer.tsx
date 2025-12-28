@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
+import KofiWidget from './KofiWidget';
 const footerLinks = [
   { to: '/', label: 'Home' },
   { to: '/guide', label: 'Parents Guide' },
@@ -26,6 +26,9 @@ const Footer = () => {
             </Link>
           ))}
         </nav>
+        <div className="flex justify-center mb-6">
+          <KofiWidget />
+        </div>
         <div className="text-center">
           <p className="text-muted-foreground text-sm">
             © 2025 911 Call Simulator - Educational Tool Only
