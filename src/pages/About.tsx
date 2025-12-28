@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { Linkedin, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Layout from '@/components/Layout';
 import simonPhoto from '@/assets/simon-photo.jpeg';
@@ -37,10 +37,20 @@ const About = () => {
                   href="https://www.linkedin.com/in/newton-simon/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="transition-colors hover:opacity-80"
+                  className="transition-opacity hover:opacity-80"
                   aria-label="Simon's LinkedIn Profile"
                 >
-                  <Linkedin className="h-6 w-6 fill-[#0077b5] text-[#0077b5]" />
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 24 24" 
+                    className="h-6 w-6"
+                  >
+                    <rect width="24" height="24" rx="4" fill="#0077b5"/>
+                    <path 
+                      fill="#fff" 
+                      d="M7.5 8.5h-2v7h2v-7zm-1-3.25a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5zm10 3.25h-1.9v3.4c0 .85-.3 1.35-1 1.35-.55 0-.85-.35-1-.7-.05-.15-.05-.35-.05-.55v-3.5h-1.9s.025 5.65 0 6.25v.75h1.9v-3.5c0-.15 0-.3.05-.4.15-.35.45-.7.95-.7.7 0 1 .55 1 1.3v3.3h1.95v-3.55c0-1.9-1-2.8-2.35-2.8-.95 0-1.55.55-1.8 1h.05v-.8h-.9z"
+                    />
+                  </svg>
                 </a>
               </div>
               <p className="text-lg text-foreground/90">
