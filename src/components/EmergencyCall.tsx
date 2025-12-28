@@ -3,13 +3,12 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Phone, PhoneOff, Mic } from 'lucide-react';
 import { useConversation } from '@11labs/react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface EmergencyCallProps {
   number: string;
   onEnd: () => void;
 }
-
-const ELEVENLABS_AGENT_ID = 'li8AdGwCO2tlhj8KMJBx';
 
 const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
   const { toast } = useToast();
@@ -57,12 +56,26 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
         }
       });
       
-      console.log('Microphone permission granted, starting ElevenLabs session...');
-      console.log('Agent ID:', ELEVENLABS_AGENT_ID);
+      console.log('Microphone permission granted, fetching signed URL...');
       
-      // Start the conversation with the public agent
+      // Get signed URL from our edge function
+      const { data, error } = await supabase.functions.invoke('elevenlabs-conversation-token');
+      
+      if (error) {
+        console.error('Edge function error:', error);
+        throw new Error('Failed to get conversation token');
+      }
+      
+      if (!data?.signed_url) {
+        console.error('No signed URL in response:', data);
+        throw new Error('No signed URL received');
+      }
+      
+      console.log('Got signed URL, starting session...');
+      
+      // Start the conversation with the signed URL
       await conversation.startSession({
-        agentId: ELEVENLABS_AGENT_ID,
+        signedUrl: data.signed_url,
       });
       
       console.log('Session started successfully');
