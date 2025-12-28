@@ -37,10 +37,10 @@ const About = () => {
                   href="https://www.linkedin.com/in/newton-simon/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary hover:text-primary/80 transition-colors"
+                  className="transition-colors hover:opacity-80"
                   aria-label="Simon's LinkedIn Profile"
                 >
-                  <Linkedin className="h-5 w-5" />
+                  <Linkedin className="h-6 w-6 fill-[#0077b5] text-[#0077b5]" />
                 </a>
               </div>
               <p className="text-lg text-foreground/90">
