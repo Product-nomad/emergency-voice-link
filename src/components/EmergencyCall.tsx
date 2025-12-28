@@ -18,7 +18,6 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
 
   const conversation = useConversation({
     onConnect: () => {
-      console.log('ElevenLabs: Connected to agent');
       setIsConnecting(false);
       toast({
         title: "Connected to Emergency Services",
@@ -26,18 +25,16 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
       });
     },
     onDisconnect: () => {
-      console.log('ElevenLabs: Disconnected from agent');
+      // Session ended
     },
-    onMessage: (message) => {
-      console.log('ElevenLabs message:', message);
+    onMessage: () => {
+      // Message received
     },
-    onError: (error) => {
-      console.error('ElevenLabs error:', error);
-      const errorMessage = typeof error === 'string' ? error : 'Connection failed';
-      setConnectionError(errorMessage);
+    onError: () => {
+      setConnectionError("Connection issue occurred");
       toast({
         title: "Connection Error",
-        description: errorMessage,
+        description: "Unable to connect. Please try again.",
         variant: "destructive"
       });
     },
@@ -45,8 +42,6 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
 
   const startCall = useCallback(async () => {
     try {
-      console.log('Requesting microphone permission...');
-      
       // Request microphone permission
       await navigator.mediaDevices.getUserMedia({ 
         audio: {
@@ -56,40 +51,24 @@ const EmergencyCall = ({ number, onEnd }: EmergencyCallProps) => {
         }
       });
       
-      console.log('Microphone permission granted, fetching signed URL...');
-      
       // Get signed URL from our edge function
       const { data, error } = await supabase.functions.invoke('elevenlabs-conversation-token');
       
-      if (error) {
-        console.error('Edge function error:', error);
-        throw new Error('Failed to get conversation token');
+      if (error || !data?.signed_url) {
+        throw new Error('connection_failed');
       }
-      
-      if (!data?.signed_url) {
-        console.error('No signed URL in response:', data);
-        throw new Error('No signed URL received');
-      }
-      
-      console.log('Got signed URL, starting session...');
       
       // Start the conversation with the signed URL
       await conversation.startSession({
         signedUrl: data.signed_url,
       });
-      
-      console.log('Session started successfully');
     } catch (error) {
-      console.error('Call setup error:', error);
-      
-      let errorMessage = "Failed to connect to emergency services. ";
+      let errorMessage = "Unable to connect. Please try again.";
       
       if ((error as Error).name === 'NotAllowedError') {
-        errorMessage += "Please allow microphone access and try again.";
+        errorMessage = "Please allow microphone access and try again.";
       } else if ((error as Error).name === 'NotFoundError') {
-        errorMessage += "No microphone detected.";
-      } else {
-        errorMessage += (error as Error).message || "Please check your device settings and try again.";
+        errorMessage = "No microphone detected.";
       }
 
       setConnectionError(errorMessage);
