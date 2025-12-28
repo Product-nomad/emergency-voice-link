@@ -3,18 +3,17 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Linkedin, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Navigation from '@/components/Navigation';
+import Layout from '@/components/Layout';
 import KofiWidget from '@/components/KofiWidget';
 
 const About = () => {
   return (
-    <>
+    <Layout>
       <Helmet>
         <title>About | 911 Call Simulator</title>
         <meta name="description" content="Learn about Simon, the creator of 911 Call Simulator - a safety tool built to help children learn emergency response." />
       </Helmet>
-      <Navigation />
-      <main className="min-h-screen bg-background py-16 px-4">
+      <div className="py-16 px-4">
         <article className="max-w-2xl mx-auto">
           {/* Header */}
           <header className="mb-12">
@@ -127,8 +126,8 @@ const About = () => {
             </Button>
           </div>
         </article>
-      </main>
-    </>
+      </div>
+    </Layout>
   );
 };
 
