@@ -16,7 +16,7 @@ const About = () => {
       <div className="py-16 px-4">
         <article className="max-w-2xl mx-auto">
           {/* Header */}
-          <header className="mb-12">
+          <header className="mb-8">
             <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
               About Me
             </h1>
