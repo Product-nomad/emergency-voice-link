@@ -1,6 +1,7 @@
 import React from 'react';
 import Navigation from './Navigation';
 import Footer from './Footer';
+import CookieBanner from './CookieBanner';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ const Layout: React.FC<LayoutProps> = ({ children, showFooter = true }) => {
         {children}
       </main>
       {showFooter && <Footer />}
+      <CookieBanner />
     </div>
   );
 };
