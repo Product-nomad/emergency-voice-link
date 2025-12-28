@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const ELEVENLABS_AGENT_ID = 'li8AdGwCO2tlhj8KMJBx';
+// Agent ID loaded from environment variable for security
 const RATE_LIMIT_MAX_REQUESTS = 10; // Max requests per time window
 const RATE_LIMIT_WINDOW_MINUTES = 60; // Time window in minutes
 
@@ -29,10 +29,11 @@ serve(async (req) => {
 
   try {
     const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
+    const ELEVENLABS_AGENT_ID = Deno.env.get('ELEVENLABS_AGENT_ID');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     
-    if (!ELEVENLABS_API_KEY) {
+    if (!ELEVENLABS_API_KEY || !ELEVENLABS_AGENT_ID) {
       throw new Error('Service configuration error');
     }
 
