@@ -1,13 +1,24 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+// Allowed origins - add your production domain here
+const ALLOWED_ORIGINS = [
+  'https://lovable.dev',
+  'https://preview--',  // Lovable preview URLs
+  'http://localhost:',  // Local development
+];
 
-// Agent ID loaded from environment variable for security
-const RATE_LIMIT_MAX_REQUESTS = 10; // Max requests per time window
+function getCorsHeaders(origin: string | null): Record<string, string> {
+  const isAllowed = origin && ALLOWED_ORIGINS.some(allowed => origin.includes(allowed));
+  
+  return {
+    'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  };
+}
+
+// Stricter rate limiting
+const RATE_LIMIT_MAX_REQUESTS = 3; // Reduced from 10 to 3 per time window
 const RATE_LIMIT_WINDOW_MINUTES = 60; // Time window in minutes
 
 // Generate a hash for IP-based rate limiting
@@ -22,9 +33,24 @@ function hashIP(ip: string): string {
 }
 
 serve(async (req) => {
+  const origin = req.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Reject requests from unauthorized origins (extra protection layer)
+  const isAllowedOrigin = origin && ALLOWED_ORIGINS.some(allowed => origin.includes(allowed));
+  if (!isAllowedOrigin && origin) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized origin' }),
+      {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 
   try {
