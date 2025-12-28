@@ -26,7 +26,7 @@ const About = () => {
           </header>
 
           {/* Author intro with LinkedIn and photo */}
-          <div className="flex items-start justify-between gap-6 mb-8">
+          <div className="flex items-start justify-between gap-6 mb-2">
             <div className="flex items-center gap-3">
               <p className="text-lg text-foreground">
                 Hi, I'm <span className="font-semibold">Simon</span>
