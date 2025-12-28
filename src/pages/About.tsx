@@ -60,7 +60,7 @@ const About = () => {
               <img
                 src={simonPhoto}
                 alt="Simon - Creator of 911 Call Simulator"
-                className="w-32 h-32 md:w-40 md:h-40 rounded-lg object-cover shadow-lg mx-auto md:mx-0"
+                className="w-24 h-24 md:w-32 md:h-32 rounded-lg object-cover shadow-lg mx-auto md:mx-0"
               />
             </div>
           </div>
