@@ -11,6 +11,7 @@ import Scripts from "./pages/Scripts";
 import Protocol from "./pages/Protocol";
 import FAQ from "./pages/FAQ";
 import Resources from "./pages/Resources";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/protocol" element={<Protocol />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/about" element={<About />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
