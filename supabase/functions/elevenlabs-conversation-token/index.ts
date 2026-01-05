@@ -5,6 +5,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const ALLOWED_ORIGINS = [
   'https://911callsimulator.com',
   'https://www.911callsimulator.com',
+  'https://999callsimulator.com',
+  'https://www.999callsimulator.com',
   'https://lovable.dev',
   'https://preview--',  // Lovable preview URLs
   'http://localhost:',  // Local development
