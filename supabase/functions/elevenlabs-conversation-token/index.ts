@@ -3,6 +3,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // Allowed origins - add your production domain here
 const ALLOWED_ORIGINS = [
+  'https://911callsimulator.com',
+  'https://www.911callsimulator.com',
   'https://lovable.dev',
   'https://preview--',  // Lovable preview URLs
   'http://localhost:',  // Local development
