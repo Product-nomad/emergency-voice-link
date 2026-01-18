@@ -32,17 +32,17 @@ const Navigation = () => {
           </Link>
 
           {/* Desktop Navigation - visible on md and up */}
-          <nav className="hidden md:flex space-x-6 items-center">
+          <nav className="hidden md:flex flex-row gap-6 items-center">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.to;
               return (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${
                     isActive
                       ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      : 'text-muted-foreground hover:text-blue-600 hover:bg-accent'
                   }`}
                 >
                   {link.label}
