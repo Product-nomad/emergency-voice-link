@@ -28,7 +28,7 @@ const Navigation = () => {
         <div className="flex h-14 items-center justify-between">
           {/* Logo/Brand */}
           <Link to="/" className="flex items-center gap-2 font-semibold text-foreground">
-            <span className="text-lg">911 Call Simulator</span>
+            <span className="text-lg">911/999 Call Simulator</span>
           </Link>
 
           {/* Desktop Navigation - visible on md and up */}
@@ -66,7 +66,7 @@ const Navigation = () => {
             <SheetContent side="right" className="w-72 bg-background">
               <SheetHeader className="text-left">
                 <SheetTitle className="text-foreground text-lg font-semibold">
-                  911 Call Simulator
+                  911/999 Call Simulator
                 </SheetTitle>
               </SheetHeader>
               <nav className="mt-8 flex flex-col gap-2">

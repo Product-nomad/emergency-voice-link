@@ -54,7 +54,7 @@ const About = () => {
             <div className="flex-shrink-0">
               <img
                 src={simonPhoto}
-                alt="Simon - Creator of 911 Call Simulator"
+                alt="Simon - Creator of 911/999 Call Simulator"
                 className="w-24 h-24 md:w-32 md:h-32 rounded-lg object-cover shadow-lg mx-auto md:mx-0"
               />
             </div>
@@ -64,7 +64,7 @@ const About = () => {
           <div className="prose prose-lg max-w-none text-foreground/90 space-y-6">
             <p>
               My career is defined by building complex enterprise systems, but this project—
-              <strong>911 Call Simulator</strong>—was born from a much simpler, yet terrifying requirement:{" "}
+              <strong>911/999 Call Simulator</strong>—was born from a much simpler, yet terrifying requirement:{" "}
               <strong>My own family's safety.</strong>
             </p>
 

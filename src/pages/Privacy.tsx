@@ -12,7 +12,7 @@ const Privacy = () => {
         <title>Privacy Policy | 911/999 Call Simulator</title>
         <meta
           name="description"
-          content="Privacy Policy for 911 Call Simulator - Learn how we handle your data and protect your privacy."
+          content="Privacy Policy for 911/999 Call Simulator - Learn how we handle your data and protect your privacy."
         />
         <link rel="canonical" href="https://911callsimulator.com/privacy" />
       </Helmet>
@@ -26,7 +26,7 @@ const Privacy = () => {
           <div className="prose prose-lg max-w-none text-foreground/90 space-y-6">
             <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Overview</h2>
             <p>
-              911 Call Simulator ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy
+              911/999 Call Simulator ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy
               explains how we collect, use, and safeguard information when you use our educational emergency call
               simulation tool.
             </p>

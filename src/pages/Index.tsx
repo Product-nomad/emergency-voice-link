@@ -18,7 +18,7 @@ const structuredData = {
     },
     {
       "@type": "WebApplication",
-      name: "911 Call Simulator",
+      name: "911/999 Call Simulator",
       url: "https://911callsimulator.com",
       applicationCategory: "EducationalApplication",
       operatingSystem: "Any",
@@ -44,7 +44,7 @@ const structuredData = {
     },
     {
       "@type": "Organization",
-      name: "911 Call Simulator",
+      name: "911/999 Call Simulator",
       url: "https://911callsimulator.com",
       logo: "https://911callsimulator.com/favicon.ico",
     },
