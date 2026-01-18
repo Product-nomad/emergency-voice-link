@@ -32,25 +32,24 @@ const Navigation = () => {
           </Link>
 
           {/* Desktop Navigation - visible on md and up */}
-          <ul className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex space-x-6 items-center">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.to;
               return (
-                <li key={link.to}>
-                  <Link
-                    to={link.to}
-                    className={`px-2 lg:px-3 py-2 rounded-md text-xs lg:text-sm font-medium transition-colors whitespace-nowrap ${
-                      isActive
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-foreground hover:bg-accent'
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                  }`}
+                >
+                  {link.label}
+                </Link>
               );
             })}
-          </ul>
+          </nav>
 
           {/* Mobile Menu Button - visible on small screens */}
           <Sheet open={open} onOpenChange={setOpen}>

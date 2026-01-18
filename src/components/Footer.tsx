@@ -2,42 +2,26 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import KofiWidget from './KofiWidget';
 
-const footerLinks = [
-  { to: '/', label: 'Home' },
-  { to: '/guide', label: 'Parents Guide' },
-  { to: '/scripts', label: 'Scripts' },
-  { to: '/protocol', label: 'Dispatcher Protocol' },
-  { to: '/faq', label: 'FAQ' },
-  { to: '/resources', label: 'Resources' },
-  { to: '/about', label: 'About' },
-  { to: '/privacy', label: 'Privacy Policy' },
-];
-
 const Footer = () => {
   return (
-    <footer className="bg-muted/50 border-t border-border mt-auto">
-      <div className="container mx-auto px-4 py-8">
-        <nav className="flex flex-wrap justify-center gap-4 md:gap-8 mb-6">
-          {footerLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="text-muted-foreground hover:text-foreground transition-colors text-sm"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+    <footer className="bg-gray-900 text-white py-8 mt-auto">
+      <div className="container mx-auto px-4">
         <div className="flex justify-center mb-6">
           <KofiWidget />
         </div>
-        <div className="text-center">
-          <p className="text-muted-foreground text-sm">
+        <div className="text-center space-y-2">
+          <p className="text-gray-300 text-sm">
             © 2025 911 Call Simulator - Educational Tool Only
           </p>
-          <p className="text-muted-foreground/70 text-xs mt-2">
+          <p className="text-gray-500 text-xs">
             This is a training simulation. For real emergencies, dial 911.
           </p>
+          <Link 
+            to="/privacy" 
+            className="inline-block text-gray-400 hover:text-white text-sm transition-colors mt-2"
+          >
+            Privacy Policy
+          </Link>
         </div>
       </div>
     </footer>
