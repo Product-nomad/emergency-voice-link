@@ -13,6 +13,7 @@ import Protocol from "./pages/Protocol";
 import FAQ from "./pages/FAQ";
 import Resources from "./pages/Resources";
 import About from "./pages/About";
+import Privacy from "./pages/Privacy";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/faq" element={<FAQ />} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/about" element={<About />} />
+            <Route path="/privacy" element={<Privacy />} />
           </Routes>
         </BrowserRouter>
         <Analytics />

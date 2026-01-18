@@ -12,12 +12,10 @@ import {
 
 const navLinks = [
   { to: '/', label: 'Home', icon: Home },
-  { to: '/guide', label: 'Parents Guide', icon: BookOpen },
-  { to: '/scripts', label: 'Scripts', icon: FileText },
-  { to: '/protocol', label: 'Dispatcher Protocol', icon: Shield },
+  { to: '/guide', label: 'Guide', icon: BookOpen },
   { to: '/faq', label: 'FAQ', icon: HelpCircle },
-  { to: '/resources', label: 'Resources', icon: ExternalLink },
   { to: '/about', label: 'About', icon: User },
+  { to: '/privacy', label: 'Privacy', icon: Shield },
 ];
 
 const Navigation = () => {

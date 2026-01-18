@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import KofiWidget from './KofiWidget';
+
 const footerLinks = [
   { to: '/', label: 'Home' },
   { to: '/guide', label: 'Parents Guide' },
@@ -9,6 +10,7 @@ const footerLinks = [
   { to: '/faq', label: 'FAQ' },
   { to: '/resources', label: 'Resources' },
   { to: '/about', label: 'About' },
+  { to: '/privacy', label: 'Privacy Policy' },
 ];
 
 const Footer = () => {
