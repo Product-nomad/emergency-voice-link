@@ -18,9 +18,9 @@ const Privacy = () => {
       </Helmet>
       <div className="py-16 px-4">
         <article className="max-w-2xl mx-auto">
-          <header className="mb-8">
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">Privacy Policy</h1>
-            <p className="text-muted-foreground">Last updated: January 2025</p>
+          <header className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Privacy Policy</h1>
+            <p className="text-sm text-gray-500">Last updated: January 2025</p>
           </header>
 
           <div className="prose prose-lg max-w-none text-foreground/90 space-y-6">
