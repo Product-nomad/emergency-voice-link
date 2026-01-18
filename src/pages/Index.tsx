@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import EmergencyDialer from "@/components/EmergencyDialer";
 import EmergencyCall from "@/components/EmergencyCall";
+import HomepageContent from "@/components/HomepageContent";
 import { trackConversion } from "@/utils/googleAds";
 import MainLayout from "@/components/MainLayout";
 
@@ -74,6 +75,7 @@ const Index = () => {
           <EmergencyDialer onCall={handleStartCall} />
         )}
       </div>
+      <HomepageContent />
     </MainLayout>
   );
 };
