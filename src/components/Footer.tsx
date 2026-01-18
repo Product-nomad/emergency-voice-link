@@ -14,7 +14,7 @@ const Footer = () => {
             © 2025 911/999 Call Simulator - Educational Tool Only
           </p>
           <p className="text-gray-500 text-xs">
-            This is a training simulation. For real emergencies, dial 911.
+            This is a training simulation. For real emergencies, dial 911 or 999.
           </p>
           <div className="flex items-center justify-center gap-4 mt-2">
             <Link 
