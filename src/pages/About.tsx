@@ -16,18 +16,18 @@ const About = () => {
           content="Learn about Simon, the creator of 911/999 Call Simulator - a safety tool built to help children learn emergency response."
         />
       </Helmet>
-      <div className="py-16 px-4">
+      <div className="py-8 px-4">
         <article className="max-w-2xl mx-auto">
           {/* Header */}
-          <header className="mb-2">
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-2">About Me</h1>
+          <header className="mb-4">
+            <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-1">About Me</h1>
             <p className="font-serif text-xl md:text-2xl text-muted-foreground italic">
               Architecting Solutions. Mitigating Risk. Saving Lives.
             </p>
           </header>
 
           {/* Profile Section - 2 Column Layout */}
-          <div className="flex flex-col-reverse md:flex-row items-start gap-6 mb-12">
+          <div className="flex flex-col-reverse md:flex-row items-start gap-6 mb-8">
             {/* Left Column - Text */}
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-4">
