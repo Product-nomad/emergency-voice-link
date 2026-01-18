@@ -3,25 +3,22 @@ import { AlertTriangle, MapPin, Phone, MessageCircle } from 'lucide-react';
 
 const HomepageContent = () => {
   return (
-    <section className="bg-muted/30 border-t border-border py-12 px-4">
-      <div className="max-w-3xl mx-auto space-y-12">
+    <section className="bg-gray-50 dark:bg-gray-900/50 py-12 px-4">
+      <div className="max-w-4xl mx-auto space-y-12">
         {/* Section 1: Why Practice */}
         <div>
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-            Why Practice Emergency Calls?
+            Why Practice?
           </h2>
           <p className="text-lg text-foreground/90 leading-relaxed">
-            In a real emergency, fine motor skills and memory often fail due to panic. 
-            This simulator helps children (and adults) build the "muscle memory" needed 
-            to dial 911/999 calmly. By rehearsing the physical act of dialing and speaking 
-            to a dispatcher, we reduce the cognitive load during an actual crisis.
+            In an emergency, panic affects fine motor skills. This simulator builds the muscle memory needed to dial 911/999.
           </p>
         </div>
 
-        {/* Section 2: 3 Things Every Child Should Know */}
+        {/* Section 2: 3 Golden Rules */}
         <div>
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
-            3 Things Every Child Should Know
+            3 Golden Rules
           </h2>
           <div className="space-y-6">
             <div className="flex gap-4">
@@ -33,8 +30,7 @@ const HomepageContent = () => {
                   1. Know Your Location
                 </h3>
                 <p className="text-foreground/80">
-                  Dispatchers can't always pinpoint cell phones instantly. 
-                  Teach your child their full home address.
+                  Cell phones don't always pinpoint you. Know your address.
                 </p>
               </div>
             </div>
@@ -48,8 +44,7 @@ const HomepageContent = () => {
                   2. Don't Hang Up
                 </h3>
                 <p className="text-foreground/80">
-                  If you dial by mistake, stay on the line and tell the operator. 
-                  Hanging up sends police to check on you.
+                  If you dial by mistake, stay on the line.
                 </p>
               </div>
             </div>
@@ -60,11 +55,10 @@ const HomepageContent = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-lg text-foreground mb-1">
-                  3. Listen to the Questions
+                  3. Listen First
                 </h3>
                 <p className="text-foreground/80">
-                  The dispatcher follows a specific protocol. 
-                  Answer their questions clearly and don't argue.
+                  Answer the dispatcher's questions clearly.
                 </p>
               </div>
             </div>
