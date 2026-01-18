@@ -19,7 +19,7 @@ const About = () => {
       <div className="py-16 px-4">
         <article className="max-w-2xl mx-auto">
           {/* Header */}
-          <header className="mb-4">
+          <header className="mb-2">
             <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-2">About Me</h1>
             <p className="font-serif text-xl md:text-2xl text-muted-foreground italic">
               Architecting Solutions. Mitigating Risk. Saving Lives.
