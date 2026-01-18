@@ -10,6 +10,10 @@ const CookieBanner = () => {
     if (!accepted) {
       setVisible(true);
     }
+
+    const handleReset = () => setVisible(true);
+    window.addEventListener('reset-cookie-consent', handleReset);
+    return () => window.removeEventListener('reset-cookie-consent', handleReset);
   }, []);
 
   const handleAccept = () => {
