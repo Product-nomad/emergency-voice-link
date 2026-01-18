@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { useConversation } from '@11labs/react';
-import { supabase } from '@/integrations/supabase/client';
 import { useRingingSound } from './useRingingSound';
+import { getCachedToken, prefetchToken, clearTokenCache } from '@/services/tokenPrefetch';
 
 type CallPhase = 'ringing' | 'connecting' | 'connected' | 'error';
 
@@ -21,7 +21,7 @@ interface UseEmergencyCallReturn {
 /**
  * Custom hook that encapsulates all emergency call logic
  * Handles ElevenLabs conversation, microphone access, and call state
- * Implements "Ring-then-Connect" flow for better perceived latency
+ * Implements "Ring-then-Connect" flow with WebRTC for lowest latency
  */
 export const useEmergencyCall = ({
   onCallEnd,
@@ -35,7 +35,7 @@ export const useEmergencyCall = ({
 
   const conversation = useConversation({
     onConnect: () => {
-      // Agent WebSocket connected - stop ringing and start timer
+      // Agent WebRTC connected - stop ringing and start timer
       stopRinging();
       setCallPhase('connected');
       
@@ -59,7 +59,8 @@ export const useEmergencyCall = ({
         setCallPhase('connected');
       }
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('[EmergencyCall] Conversation error:', error);
       stopRinging();
       setCallPhase('error');
       setConnectionError('Connection issue occurred');
@@ -72,36 +73,57 @@ export const useEmergencyCall = ({
   });
 
   const startCall = useCallback(async (): Promise<void> => {
+    const startTime = performance.now();
+    
     try {
       // Start ringing immediately for perceived latency reduction
       setCallPhase('ringing');
       startRinging();
 
-      // Request microphone permission and fetch token in parallel
-      const [, tokenResponse] = await Promise.all([
-        navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true,
-          },
-        }),
-        supabase.functions.invoke('elevenlabs-conversation-token'),
-      ]);
+      // Check for pre-fetched token first (from warmup during dialing)
+      let token = getCachedToken();
+      
+      // Request microphone permission immediately
+      const micPromise = navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
 
-      const { data, error } = tokenResponse;
+      // If no cached token, fetch one in parallel with mic permission
+      if (!token) {
+        console.log('[EmergencyCall] No cached token, fetching...');
+        const [, fetchedToken] = await Promise.all([
+          micPromise,
+          prefetchToken(),
+        ]);
+        token = fetchedToken;
+      } else {
+        console.log('[EmergencyCall] Using pre-fetched token');
+        await micPromise;
+      }
 
-      if (error || !data?.signed_url) {
+      if (!token) {
         throw new Error('connection_failed');
       }
+
+      const tokenTime = performance.now();
+      console.log(`[EmergencyCall] Token ready in ${(tokenTime - startTime).toFixed(0)}ms`);
 
       // Transition to connecting phase
       setCallPhase('connecting');
 
-      // Start the conversation with the signed URL
+      // Start the conversation with WebRTC for lowest latency
       await conversation.startSession({
-        signedUrl: data.signed_url,
+        conversationToken: token,
+        connectionType: 'webrtc',
       });
+
+      const connectedTime = performance.now();
+      console.log(`[EmergencyCall] Connected in ${(connectedTime - startTime).toFixed(0)}ms`);
+      
     } catch (error) {
       stopRinging();
       let errorMessage = 'Unable to connect. Please try again.';
@@ -127,6 +149,7 @@ export const useEmergencyCall = ({
 
     return () => {
       stopRinging();
+      clearTokenCache();
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
@@ -136,6 +159,7 @@ export const useEmergencyCall = ({
 
   const handleEndCall = useCallback(async (): Promise<void> => {
     stopRinging();
+    clearTokenCache();
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }

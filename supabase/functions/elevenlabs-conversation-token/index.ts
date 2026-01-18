@@ -121,9 +121,9 @@ serve(async (req) => {
       supabase.rpc('cleanup_old_elevenlabs_rate_limits').then(() => {});
     }
 
-    // Request a signed URL for WebSocket connection
+    // Request a WebRTC token for lower latency (preferred over WebSocket signed URL)
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${ELEVENLABS_AGENT_ID}`,
+      `https://api.elevenlabs.io/v1/convai/conversation/token?agent_id=${ELEVENLABS_AGENT_ID}`,
       {
         method: 'GET',
         headers: {
@@ -133,12 +133,15 @@ serve(async (req) => {
     );
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('ElevenLabs API error:', response.status, errorText);
       throw new Error('Unable to initialize conversation');
     }
 
     const data = await response.json();
 
-    return new Response(JSON.stringify(data), {
+    // Return the token for WebRTC connection (lower latency than WebSocket)
+    return new Response(JSON.stringify({ token: data.token }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
