@@ -53,19 +53,19 @@ export const useEmergencyCall = ({
 
   const startCall = useCallback(async (): Promise<void> => {
     try {
-      // Request microphone permission
-      await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      });
+      // Request microphone permission and fetch token in parallel for faster connection
+      const [, tokenResponse] = await Promise.all([
+        navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          },
+        }),
+        supabase.functions.invoke('elevenlabs-conversation-token'),
+      ]);
 
-      // Get signed URL from our edge function
-      const { data, error } = await supabase.functions.invoke(
-        'elevenlabs-conversation-token'
-      );
+      const { data, error } = tokenResponse;
 
       if (error || !data?.signed_url) {
         throw new Error('connection_failed');
