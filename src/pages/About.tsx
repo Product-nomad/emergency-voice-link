@@ -27,7 +27,7 @@ const About = () => {
           </header>
 
           {/* Profile Section - 2 Column Layout */}
-          <div className="flex flex-col-reverse md:flex-row items-start gap-6 mb-8">
+          <div className="flex flex-col-reverse md:flex-row items-start gap-6 mb-4">
             {/* Left Column - Text */}
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-4">
