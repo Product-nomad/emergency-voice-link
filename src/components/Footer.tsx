@@ -11,7 +11,7 @@ const Footer = () => {
         </div>
         <div className="text-center space-y-2">
           <p className="text-gray-300 text-sm">
-            © 2025 911 Call Simulator - Educational Tool Only
+            © 2025 911/999 Call Simulator - Educational Tool Only
           </p>
           <p className="text-gray-500 text-xs">
             This is a training simulation. For real emergencies, dial 911.

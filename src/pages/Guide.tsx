@@ -24,7 +24,7 @@ const howToStructuredData = {
   "tool": [
     {
       "@type": "HowToTool",
-      "name": "911 Call Simulator"
+      "name": "911/999 Call Simulator"
     }
   ],
   "step": [
@@ -55,7 +55,7 @@ const howToStructuredData = {
     {
       "@type": "HowToStep",
       "name": "Use This Simulator",
-      "text": "Let them practice with our 911 simulator. It provides a safe, realistic experience without tying up real emergency lines.",
+      "text": "Let them practice with our 911/999 simulator. It provides a safe, realistic experience without tying up real emergency lines.",
       "position": 5
     },
     {
@@ -239,7 +239,7 @@ const Guide = () => {
               {
                 step: 5,
                 title: "Use This Simulator",
-                desc: "Let them practice with our 911 simulator. It provides a safe, realistic experience without tying up real emergency lines."
+                desc: "Let them practice with our 911/999 simulator. It provides a safe, realistic experience without tying up real emergency lines."
               },
               {
                 step: 6,

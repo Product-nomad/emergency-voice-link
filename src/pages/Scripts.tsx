@@ -171,7 +171,7 @@ const Scripts = () => {
           <h2 className="text-2xl font-bold text-foreground mb-4">Ready to Practice?</h2>
           <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
             Use our simulator to practice these scripts in a safe environment. 
-            The AI dispatcher will respond just like a real 911 operator.
+            The AI dispatcher will respond just like a real 911/999 operator.
           </p>
           <a 
             href="/" 

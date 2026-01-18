@@ -231,7 +231,7 @@ const Resources = () => {
         <div className="mt-8 bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-2xl p-8 text-center">
           <h2 className="text-2xl font-bold text-foreground mb-4">Ready to Practice?</h2>
           <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-            Use our 911 simulator to practice emergency calls in a safe environment.
+            Use our 911/999 simulator to practice emergency calls in a safe environment.
           </p>
           <a 
             href="/" 

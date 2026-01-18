@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     question: "Is this free to use?",
-    answer: "Yes! The 911 Call Simulator is completely free to use for educational purposes. We believe everyone should have access to emergency preparedness training, especially children and families."
+    answer: "Yes! The 911/999 Call Simulator is completely free to use for educational purposes. We believe everyone should have access to emergency preparedness training, especially children and families."
   },
   {
     question: "Is my voice recorded?",
@@ -78,8 +78,8 @@ const FAQ = () => {
   return (
     <MainLayout>
       <Helmet>
-        <title>Frequently Asked Questions | 911 Call Simulator FAQ</title>
-        <meta name="description" content="Common questions about the 911 Call Simulator. Learn about safety, privacy, and how to use this educational tool for emergency preparedness training." />
+        <title>Frequently Asked Questions | 911/999 Call Simulator FAQ</title>
+        <meta name="description" content="Common questions about the 911/999 Call Simulator. Learn about safety, privacy, and how to use this educational tool for emergency preparedness training." />
         <script type="application/ld+json">
           {JSON.stringify(faqStructuredData)}
         </script>
@@ -91,7 +91,7 @@ const FAQ = () => {
             Frequently Asked Questions
           </h1>
           <p className="text-xl text-muted-foreground">
-            Everything you need to know about the 911 Call Simulator
+            Everything you need to know about the 911/999 Call Simulator
           </p>
         </header>
 
