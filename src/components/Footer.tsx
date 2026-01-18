@@ -16,12 +16,24 @@ const Footer = () => {
           <p className="text-gray-500 text-xs">
             This is a training simulation. For real emergencies, dial 911.
           </p>
-          <Link 
-            to="/privacy" 
-            className="inline-block text-gray-400 hover:text-white text-sm transition-colors mt-2"
-          >
-            Privacy Policy
-          </Link>
+          <div className="flex items-center justify-center gap-4 mt-2">
+            <Link 
+              to="/privacy" 
+              className="text-gray-400 hover:text-white text-sm transition-colors hover:underline"
+            >
+              Privacy Policy
+            </Link>
+            <span className="text-gray-600">|</span>
+            <button
+              onClick={() => {
+                localStorage.removeItem('cookies-accepted');
+                window.dispatchEvent(new CustomEvent('reset-cookie-consent'));
+              }}
+              className="text-gray-400 hover:text-white text-sm transition-colors hover:underline"
+            >
+              Cookie Settings
+            </button>
+          </div>
         </div>
       </div>
     </footer>
