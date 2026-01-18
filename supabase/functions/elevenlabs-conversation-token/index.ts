@@ -7,9 +7,11 @@ const ALLOWED_ORIGINS = [
   'https://www.911callsimulator.com',
   'https://999callsimulator.com',
   'https://www.999callsimulator.com',
-  'https://lovable.dev',
-  'https://preview--',  // Lovable preview URLs
-  'http://localhost:',  // Local development
+  'https://emergency-voice-link.lovable.app',
+  '.lovableproject.com',  // Lovable project preview URLs
+  '.lovable.app',         // Lovable published URLs
+  'https://preview--',    // Lovable legacy preview URLs
+  'http://localhost:',    // Local development
 ];
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
