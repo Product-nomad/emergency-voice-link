@@ -31,8 +31,10 @@ export interface DisclaimerHeaderProps {
   warning?: string;
 }
 
+export type CallPhase = 'ringing' | 'connecting' | 'connected' | 'error';
+
 export interface CallStatusIndicatorProps {
-  isConnecting: boolean;
+  callPhase: CallPhase;
 }
 
 export interface CallDurationProps {

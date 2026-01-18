@@ -9,9 +9,10 @@ import { CallProps } from '@/types/simulator';
  * EmergencyCall Component
  * Handles the active call UI with ElevenLabs integration
  * Uses useEmergencyCall hook for call management logic
+ * Implements "Ring-then-Connect" flow for better perceived latency
  */
 const EmergencyCall: React.FC<CallProps> = ({ number, onEnd }) => {
-  const { callDuration, isConnecting, handleEndCall } = useEmergencyCall({
+  const { callDuration, callPhase, handleEndCall, formatDuration } = useEmergencyCall({
     onCallEnd: onEnd,
   });
 
@@ -22,15 +23,29 @@ const EmergencyCall: React.FC<CallProps> = ({ number, onEnd }) => {
           <h2 className="text-xl sm:text-2xl font-bold mb-2 text-foreground">
             Emergency Call
           </h2>
-          <p className="text-muted-foreground">Connected to {number}</p>
+          <p className="text-muted-foreground">
+            {callPhase === 'connected' ? `Connected to ${number}` : `Calling ${number}`}
+          </p>
         </div>
 
         <div className="space-y-4 sm:space-y-6">
           <div className="flex justify-center">
-            <CallStatusIndicator isConnecting={isConnecting} />
+            <CallStatusIndicator callPhase={callPhase} />
           </div>
 
-          <CallDuration seconds={callDuration} />
+          {/* Only show call duration when connected */}
+          {callPhase === 'connected' && (
+            <CallDuration seconds={callDuration} />
+          )}
+
+          {/* Show elapsed time indicator while connecting */}
+          {(callPhase === 'ringing' || callPhase === 'connecting') && (
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground font-mono">
+                --:--
+              </p>
+            </div>
+          )}
 
           <Button
             onClick={handleEndCall}

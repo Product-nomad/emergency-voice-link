@@ -1,7 +1,10 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { useConversation } from '@11labs/react';
 import { supabase } from '@/integrations/supabase/client';
+import { useRingingSound } from './useRingingSound';
+
+type CallPhase = 'ringing' | 'connecting' | 'connected' | 'error';
 
 interface UseEmergencyCallProps {
   onCallEnd: () => void;
@@ -9,7 +12,7 @@ interface UseEmergencyCallProps {
 
 interface UseEmergencyCallReturn {
   callDuration: number;
-  isConnecting: boolean;
+  callPhase: CallPhase;
   connectionError: string | null;
   handleEndCall: () => Promise<void>;
   formatDuration: (seconds: number) => string;
@@ -18,30 +21,47 @@ interface UseEmergencyCallReturn {
 /**
  * Custom hook that encapsulates all emergency call logic
  * Handles ElevenLabs conversation, microphone access, and call state
+ * Implements "Ring-then-Connect" flow for better perceived latency
  */
 export const useEmergencyCall = ({
   onCallEnd,
 }: UseEmergencyCallProps): UseEmergencyCallReturn => {
   const { toast } = useToast();
   const [callDuration, setCallDuration] = useState<number>(0);
-  const [isConnecting, setIsConnecting] = useState<boolean>(true);
+  const [callPhase, setCallPhase] = useState<CallPhase>('ringing');
   const [connectionError, setConnectionError] = useState<string | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const { startRinging, stopRinging } = useRingingSound();
 
   const conversation = useConversation({
     onConnect: () => {
-      setIsConnecting(false);
+      // Agent WebSocket connected - stop ringing and start timer
+      stopRinging();
+      setCallPhase('connected');
+      
+      // Start the call timer only when truly connected
+      timerRef.current = setInterval(() => {
+        setCallDuration((prev) => prev + 1);
+      }, 1000);
+
       toast({
         title: 'Connected to Emergency Services',
         description: 'You are now connected to an emergency operator',
       });
     },
     onDisconnect: () => {
-      // Session ended
+      stopRinging();
     },
     onMessage: () => {
-      // Message received
+      // If we receive a message, ensure we're in connected state
+      if (callPhase !== 'connected') {
+        stopRinging();
+        setCallPhase('connected');
+      }
     },
     onError: () => {
+      stopRinging();
+      setCallPhase('error');
       setConnectionError('Connection issue occurred');
       toast({
         title: 'Connection Error',
@@ -53,7 +73,11 @@ export const useEmergencyCall = ({
 
   const startCall = useCallback(async (): Promise<void> => {
     try {
-      // Request microphone permission and fetch token in parallel for faster connection
+      // Start ringing immediately for perceived latency reduction
+      setCallPhase('ringing');
+      startRinging();
+
+      // Request microphone permission and fetch token in parallel
       const [, tokenResponse] = await Promise.all([
         navigator.mediaDevices.getUserMedia({
           audio: {
@@ -71,11 +95,15 @@ export const useEmergencyCall = ({
         throw new Error('connection_failed');
       }
 
+      // Transition to connecting phase
+      setCallPhase('connecting');
+
       // Start the conversation with the signed URL
       await conversation.startSession({
         signedUrl: data.signed_url,
       });
     } catch (error) {
+      stopRinging();
       let errorMessage = 'Unable to connect. Please try again.';
 
       if ((error as Error).name === 'NotAllowedError') {
@@ -84,6 +112,7 @@ export const useEmergencyCall = ({
         errorMessage = 'No microphone detected.';
       }
 
+      setCallPhase('error');
       setConnectionError(errorMessage);
       toast({
         title: 'Connection Error',
@@ -91,25 +120,28 @@ export const useEmergencyCall = ({
         variant: 'destructive',
       });
     }
-  }, [conversation, toast]);
+  }, [conversation, toast, startRinging, stopRinging]);
 
   useEffect(() => {
     startCall();
 
-    const timer = setInterval(() => {
-      setCallDuration((prev) => prev + 1);
-    }, 1000);
-
     return () => {
-      clearInterval(timer);
+      stopRinging();
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
       conversation.endSession();
     };
   }, []);
 
   const handleEndCall = useCallback(async (): Promise<void> => {
+    stopRinging();
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
     await conversation.endSession();
     onCallEnd();
-  }, [conversation, onCallEnd]);
+  }, [conversation, onCallEnd, stopRinging]);
 
   const formatDuration = useCallback((seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -119,7 +151,7 @@ export const useEmergencyCall = ({
 
   return {
     callDuration,
-    isConnecting,
+    callPhase,
     connectionError,
     handleEndCall,
     formatDuration,
