@@ -1,69 +1,52 @@
-# Welcome to your Lovable project
+# 911 / 999 Call Simulator
 
-## Project info
+**Free interactive emergency-call simulator that teaches kids how to call 911 (US) or 999 (UK) safely.**
 
-**URL**: https://lovable.dev/projects/a004c9bf-a6f8-4c3a-be49-c7cea43b62e9
+A realistic, AI-powered dispatcher role-plays real emergency scenarios so children can practise what to say and stay calm — without tying up a real emergency line. Designed for parents, schools, and safeguarding programmes.
 
-## How can I edit this code?
+## Why this exists
 
-There are several ways of editing your application.
+Kids are told "call 999 / 911 in an emergency" but almost never get to practise. When a real emergency happens, they freeze. This simulator lets them build muscle memory in a safe, pressure-free environment.
 
-**Use Lovable**
+## What a session looks like
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a004c9bf-a6f8-4c3a-be49-c7cea43b62e9) and start prompting.
+1. Child picks a scenario (house fire, injury, stranger, lost, etc.) or gets a random one.
+2. The AI dispatcher answers and asks the right questions — calmly, age-appropriately, and in the right order.
+3. The child speaks or types their answers.
+4. End-of-call feedback: what they did well, what to practise.
 
-Changes made via Lovable will be committed automatically to this repo.
+## Who it's for
 
-**Use your preferred IDE**
+- Parents practising emergency calls with children aged roughly 5–12.
+- Primary / elementary school teachers running safety lessons.
+- Safeguarding trainers in scouting, youth groups, after-school programmes.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Regional coverage
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **🇺🇸 United States** — 911, full dispatcher script.
+- **🇬🇧 United Kingdom** — 999 (emergency) and 101 (non-emergency) variants.
 
-Follow these steps:
+## Safety and privacy
+
+- It's a simulator. It **does not** connect to real emergency services.
+- No account required. Conversations aren't stored or sent anywhere for training.
+- Conversations happen in the browser; no sensitive child data leaves the device.
+
+## Stack
+
+- [Vite](https://vitejs.dev) + React + TypeScript
+- [shadcn/ui](https://ui.shadcn.com) + Tailwind — UI
+- [Bun](https://bun.sh) — runtime
+
+## Getting started
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+bun install
+bun run dev
 ```
 
-**Edit a file directly in GitHub**
+Open the URL the dev server prints.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Licence
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/a004c9bf-a6f8-4c3a-be49-c7cea43b62e9) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+MIT.
