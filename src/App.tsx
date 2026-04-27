@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,32 +15,44 @@ import FAQ from "./pages/FAQ";
 import Resources from "./pages/Resources";
 import About from "./pages/About";
 import Privacy from "./pages/Privacy";
+import SeoCanonical from "./components/SeoCanonical";
+import { loadAnalyticsIfConsented } from "./utils/consent";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/feedback" element={<Feedback />} />
-            <Route path="/guide" element={<Guide />} />
-            <Route path="/scripts" element={<Scripts />} />
-            <Route path="/protocol" element={<Protocol />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/resources" element={<Resources />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/privacy" element={<Privacy />} />
-          </Routes>
-        </BrowserRouter>
-        <Analytics />
-      </TooltipProvider>
-    </QueryClientProvider>
-  </HelmetProvider>
-);
+const App = () => {
+  // If the user accepted cookies in a prior session, load analytics
+  // immediately. New visitors see the cookie banner first; analytics
+  // only loads when they click Accept.
+  useEffect(() => {
+    loadAnalyticsIfConsented();
+  }, []);
+
+  return (
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <SeoCanonical />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/feedback" element={<Feedback />} />
+              <Route path="/guide" element={<Guide />} />
+              <Route path="/scripts" element={<Scripts />} />
+              <Route path="/protocol" element={<Protocol />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/resources" element={<Resources />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/privacy" element={<Privacy />} />
+            </Routes>
+          </BrowserRouter>
+          <Analytics />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
+  );
+};
 
 export default App;

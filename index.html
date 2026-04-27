@@ -6,14 +6,17 @@
     <title>911/999 Call Simulator | Teach Kids Emergency Safety (Free Tool)</title>
     <meta name="description" content="Free interactive 911/999 simulator for kids. Teach your child how to call emergency services safely with our realistic, AI-powered dispatcher training tool." />
     <meta name="author" content="Product-nomad" />
-    <link rel="canonical" href="https://911callsimulator.com/" />
+    <!--
+      Canonical URL is set per-request by src/components/SeoCanonical.tsx
+      so 911callsimulator.com and 999callsimulator.com each self-canonicalise.
+      Hreflang tags are also injected from there.
+    -->
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="911/999 Call Simulator | Teach Kids Emergency Safety" />
     <meta property="og:description" content="Free interactive emergency-call simulator. Teach your child how to call 911 (US) or 999 (UK) safely, with an AI-powered dispatcher." />
     <meta property="og:image" content="/og-image.png" />
-    <meta property="og:url" content="https://911callsimulator.com/" />
     <meta property="og:site_name" content="911/999 Call Simulator" />
 
     <!-- Twitter Card -->
@@ -23,20 +26,10 @@
     <meta name="twitter:image" content="/og-image.png" />
 
     <!--
-      Google Analytics + AdSense.
-      TODO(consent): these scripts currently load on page-load. They should be
-      gated behind the cookie banner consent state for UK PECR / GDPR compliance.
-      See DECISIONS.md (2026-04-27) for the decision to defer this work.
+      Google Analytics + Google AdSense scripts are loaded by
+      src/utils/consent.ts after the user grants consent via the
+      cookie banner. They are deliberately NOT inlined here.
     -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-51DDNPLJSB"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-51DDNPLJSB');
-    </script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1138854450517299"
-     crossorigin="anonymous"></script>
   </head>
   <body>
     <div id="root"></div>

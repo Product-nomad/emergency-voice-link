@@ -2,7 +2,45 @@
 
 All notable user-visible changes. Format: [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased] — 2026-04-27
+## [Unreleased] — 2026-04-27 (afternoon)
+
+### Added
+- **Cookie consent gating** for Google Analytics + Google AdSense. Scripts no
+  longer load on page-load. They are deferred to `src/utils/consent.ts` and
+  injected only when the user clicks Accept on the cookie banner — or when a
+  prior session's consent state is found in localStorage on mount. Closes the
+  UK PECR / GDPR exposure documented in DECISIONS 2026-04-27.
+- **Decline option on the cookie banner.** Previously only Accept was
+  offered, which is itself a consent-design problem (no real choice). Banner
+  now exposes Decline and persists the choice; analytics never loads on a
+  declined session.
+- **Per-domain canonical + hreflang** via `src/components/SeoCanonical.tsx`,
+  mounted at the top of the router. Each domain self-canonicalises:
+  visitors on `999callsimulator.com` see canonical=999, visitors on
+  `911callsimulator.com` see canonical=911. Hreflang `en-US` / `en-GB` /
+  `x-default` annotates both. Closes the multi-domain SEO debt documented
+  in DECISIONS 2026-04-27.
+- **Initial test suite** using Node's built-in test runner via `tsx`:
+  - `src/utils/duration.test.ts` — 6 cases covering pure duration formatting.
+  - `src/utils/consent.test.ts` — 7 cases covering consent state read/write,
+    legacy `"true"` value migration, garbage-input handling, round-trip.
+  - `npm test` / `bun run test` runs them. 13/13 passing.
+- `tsx` added to devDependencies.
+
+### Changed
+- **Inline GA + AdSense `<script>` tags removed from `index.html`.** Replaced
+  with a comment pointing at `src/utils/consent.ts`.
+- **`useEmergencyCall` `formatDuration`** now imports the shared pure helper
+  from `src/utils/duration.ts` instead of being defined inline. Behaviour
+  unchanged; testability gained.
+- **`<link rel="canonical">` removed from `Privacy.tsx`** (was hardcoded to
+  the .com domain). Replaced by the global SeoCanonical that handles both
+  domains correctly.
+- **CookieBanner copy** updated to make the strictly-necessary vs
+  analytics/advertising distinction explicit, per the new banner doing
+  real consent management instead of acknowledgement-only.
+
+
 
 ### Added
 - `THREAT_MODEL.md` — trust boundaries, sub-processors, in-scope risks, known gaps.

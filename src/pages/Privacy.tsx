@@ -14,7 +14,7 @@ const Privacy = () => {
           name="description"
           content="Privacy Policy for 911/999 Call Simulator — what data is processed, by whom, and what your rights are."
         />
-        <link rel="canonical" href="https://911callsimulator.com/privacy" />
+        {/* Canonical is set globally by SeoCanonical so each domain self-canonicalises. */}
       </Helmet>
       <div className="py-16 px-4">
         <article className="max-w-2xl mx-auto">

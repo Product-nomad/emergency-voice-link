@@ -3,6 +3,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useConversation } from '@11labs/react';
 import { useRingingSound } from './useRingingSound';
 import { getCachedToken, prefetchToken, clearTokenCache } from '@/services/tokenPrefetch';
+import { formatDuration } from '@/utils/duration';
 
 type CallPhase = 'ringing' | 'connecting' | 'connected' | 'error';
 
@@ -167,17 +168,12 @@ export const useEmergencyCall = ({
     onCallEnd();
   }, [conversation, onCallEnd, stopRinging]);
 
-  const formatDuration = useCallback((seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  }, []);
-
   return {
     callDuration,
     callPhase,
     connectionError,
     handleEndCall,
+    // Pure helper imported from `@/utils/duration` so it can be unit-tested.
     formatDuration,
   };
 };
