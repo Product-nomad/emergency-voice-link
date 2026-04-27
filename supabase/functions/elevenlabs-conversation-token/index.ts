@@ -23,9 +23,12 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-// Stricter rate limiting
-const RATE_LIMIT_MAX_REQUESTS = 3; // Reduced from 10 to 3 per time window
-const RATE_LIMIT_WINDOW_MINUTES = 60; // Time window in minutes
+// Rate limit: balance abuse-mitigation against legitimate use. A child
+// practising 4-5 scenarios in one session was hitting the previous 3/hour
+// wall mid-lesson. 10/hour gives normal use plenty of headroom while
+// still catching scripted abuse from a single source.
+const RATE_LIMIT_MAX_REQUESTS = 10;
+const RATE_LIMIT_WINDOW_MINUTES = 60;
 
 // Generate a hash for IP-based rate limiting
 function hashIP(ip: string): string {

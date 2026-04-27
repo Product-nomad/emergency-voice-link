@@ -1,8 +1,15 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "emergency-voice-link",
+  "description": "Free interactive 911/999 call simulator — teaches kids how to safely contact emergency services with an AI-powered dispatcher.",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
+  "homepage": "https://911callsimulator.com/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Product-nomad/emergency-voice-link.git"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
