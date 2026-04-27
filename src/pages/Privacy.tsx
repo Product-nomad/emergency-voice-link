@@ -12,7 +12,7 @@ const Privacy = () => {
         <title>Privacy Policy | 911/999 Call Simulator</title>
         <meta
           name="description"
-          content="Privacy Policy for 911/999 Call Simulator - Learn how we handle your data and protect your privacy."
+          content="Privacy Policy for 911/999 Call Simulator — what data is processed, by whom, and what your rights are."
         />
         <link rel="canonical" href="https://911callsimulator.com/privacy" />
       </Helmet>
@@ -20,93 +20,162 @@ const Privacy = () => {
         <article className="max-w-2xl mx-auto">
           <header className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Privacy Policy</h1>
-            <p className="text-sm text-gray-500">Last updated: January 2025</p>
+            <p className="text-sm text-gray-500">Last updated: April 2026</p>
           </header>
 
           <div className="prose prose-lg max-w-none text-foreground/90 space-y-6">
             <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Overview</h2>
             <p>
-              911/999 Call Simulator ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy
-              explains how we collect, use, and safeguard information when you use our educational emergency call
-              simulation tool.
+              911/999 Call Simulator ("we," "our," or "us") is a free educational tool that lets children practise
+              calling emergency services with an AI-powered dispatcher. This page explains exactly what happens to
+              data when you use the tool — including the third parties involved.
+            </p>
+            <p>
+              Operator: <strong>Product-nomad</strong> (independent, UK-based). Contact via the{" "}
+              <Link to="/about" className="text-primary hover:underline">About page</Link>.
             </p>
 
-            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Information We Collect</h2>
+            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">What we don't do</h2>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>We don't ask you to create an account.</li>
+              <li>We don't store or replay voice conversations on our servers.</li>
+              <li>We don't sell, rent, or share personal data with third parties for marketing.</li>
+              <li>We don't connect to real emergency services. The simulator is role-play only.</li>
+            </ul>
+
+            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">What does happen to your voice</h2>
             <p>
-              <strong>No Personal Data or Voice Recordings Are Permanently Stored.</strong>
+              When a child speaks during a simulated call, audio streams in real time over a WebRTC connection from
+              the browser to <strong>ElevenLabs</strong> (an AI voice and conversation provider). ElevenLabs performs
+              speech-to-text, the dispatcher response, and text-to-speech, then streams audio back. We do not store
+              this audio. ElevenLabs' own retention and use of conversation data is governed by their privacy policy:{" "}
+              <a
+                href="https://elevenlabs.io/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                elevenlabs.io/privacy-policy
+              </a>
+              .
             </p>
-            <p>Our simulator is designed with privacy in mind:</p>
+            <p>
+              <strong>To be explicit:</strong> voice data does leave the device when the simulator is in use. If
+              that's not acceptable, do not use the simulator.
+            </p>
+
+            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Sub-processors</h2>
+            <p>The following third parties process data on our behalf when you use the site:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>
-                <strong>Voice Data:</strong> Voice interactions with our AI dispatcher are processed in real-time and
-                are not recorded or stored on our servers.
+                <strong>ElevenLabs</strong> — live voice and dialogue (as described above).
               </li>
               <li>
-                <strong>Analytics:</strong> We use Google Analytics to understand how visitors use our site. This
-                collects anonymous usage data such as page views and session duration.
+                <strong>Supabase</strong> — hosts a small server-side function that issues short-lived session
+                tokens, plus a rate-limiting table that records a one-way hash of your IP address (not the IP itself)
+                for up to 60 minutes to prevent abuse.
               </li>
               <li>
-                <strong>Cookies:</strong> We use essential cookies to improve your experience and remember your
-                preferences (such as cookie consent).
+                <strong>Google Analytics</strong> — anonymous, aggregated traffic statistics (page views, session
+                duration). No first-party identifiers.
+              </li>
+              <li>
+                <strong>Google AdSense</strong> — advertising. We do not run first-party advertising or share
+                personal data with advertisers; ad selection is handled by Google subject to their policies.
+              </li>
+              <li>
+                <strong>Cloudflare and/or Vercel</strong> — hosting, CDN, and basic security headers.
               </li>
             </ul>
 
-            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">How We Use Information</h2>
-            <p>The limited information we collect is used to:</p>
+            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Children's privacy</h2>
+            <p>
+              This tool is designed for children aged roughly 5–12, used <em>under adult supervision</em>. We do not
+              knowingly collect personal data from children:
+            </p>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Provide and improve our educational simulation service</li>
-              <li>Understand how users interact with our tool</li>
-              <li>Ensure the security and proper functioning of the website</li>
-            </ul>
-
-            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Third-Party Services</h2>
-            <p>Our service uses the following third-party providers:</p>
-            <ul className="list-disc pl-6 space-y-2">
+              <li>No accounts, no logins, no profiles.</li>
+              <li>No persistent identifiers tied to a child user.</li>
               <li>
-                <strong>Google Analytics:</strong> For anonymous website traffic analysis
+                Voice conversations are scenario-driven; the dispatcher is configured to keep the role-play
+                educational and age-appropriate.
               </li>
               <li>
-                <strong>Google AdSense:</strong> To display relevant advertisements
+                We do not enable personalised advertising for users under the age of 18 in jurisdictions where this
+                requires explicit consent (the AdSense account is configured in line with Google's children-content
+                policies).
+              </li>
+            </ul>
+            <p>
+              <strong>Parents and guardians:</strong> if you have any concern about a session or want to ask what was
+              processed, contact us via the{" "}
+              <Link to="/about" className="text-primary hover:underline">About page</Link>.
+            </p>
+
+            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Cookies and tracking</h2>
+            <p>The site uses:</p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <strong>Strictly necessary cookies</strong> for the cookie-banner choice itself.
               </li>
               <li>
-                <strong>ElevenLabs:</strong> For AI-powered voice interaction (processed in real-time, not stored)
+                <strong>Analytics and advertising cookies</strong> via Google Analytics and Google AdSense, subject
+                to your choice on the cookie banner.
+              </li>
+            </ul>
+            <p className="text-sm text-gray-500">
+              Known limitation: the analytics and advertising scripts currently load on page-load before the cookie
+              banner choice is registered. Bringing this strictly in line with UK PECR / GDPR is on our roadmap; until
+              then you can block these by declining the banner, by using browser-level privacy settings, or by
+              installing a content blocker.
+            </p>
+
+            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Your rights (UK GDPR)</h2>
+            <p>If you are in the UK or EU, you have the right to:</p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Ask what data we hold about you (we generally hold none, by design).</li>
+              <li>Ask us to erase any data we do hold.</li>
+              <li>Object to the use of analytics or advertising cookies via the cookie banner or your browser.</li>
+              <li>
+                Lodge a complaint with the UK Information Commissioner's Office:{" "}
+                <a
+                  href="https://ico.org.uk/make-a-complaint/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  ico.org.uk/make-a-complaint
+                </a>
+                .
               </li>
             </ul>
 
-            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Children's Privacy</h2>
+            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Data security</h2>
             <p>
-              Our simulator is designed as an educational tool for children. We do not knowingly collect personal
-              information from children. The voice simulation feature processes audio in real-time without storing any
-              recordings.
+              The server-side credentials that connect to ElevenLabs are held in the Supabase Edge Function
+              environment, never in client code. The token-mint endpoint enforces a per-IP-hash rate limit and a CORS
+              allowlist. The technical posture is documented in the public threat model:{" "}
+              <a
+                href="https://github.com/Product-nomad/emergency-voice-link/blob/main/THREAT_MODEL.md"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                THREAT_MODEL.md
+              </a>
+              .
             </p>
 
-            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Data Security</h2>
+            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Changes to this policy</h2>
             <p>
-              We implement appropriate technical and organizational measures to protect against unauthorized access,
-              alteration, disclosure, or destruction of data.
+              We may update this Privacy Policy as the tool evolves. Material changes will be reflected in the
+              "Last updated" date at the top and noted in the project's public CHANGELOG.
             </p>
 
-            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Your Rights</h2>
-            <p>You have the right to:</p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>Opt out of analytics tracking by using browser privacy settings</li>
-              <li>Clear cookies stored in your browser at any time</li>
-              <li>Contact us with any privacy-related questions</li>
-            </ul>
-
-            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Changes to This Policy</h2>
+            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Contact</h2>
             <p>
-              We may update this Privacy Policy from time to time. Any changes will be posted on this page with an
-              updated revision date.
-            </p>
-
-            <h2 className="text-2xl font-bold text-foreground mt-8 mb-4">Contact Us</h2>
-            <p>
-              If you have questions about this Privacy Policy, please visit our{" "}
-              <Link to="/about" className="text-primary hover:underline">
-                About page
-              </Link>{" "}
-              to learn more about us.
+              Questions or requests? Visit the{" "}
+              <Link to="/about" className="text-primary hover:underline">About page</Link> for contact details.
             </p>
           </div>
 
