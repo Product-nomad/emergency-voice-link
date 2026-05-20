@@ -66,6 +66,5 @@ All notable user-visible changes. Format: [Keep a Changelog](https://keepachange
 - `.gitignore` now excludes `.env`. Previously, `.env` was committed to the repo. The committed values were `VITE_SUPABASE_*` (public-by-design Supabase anon keys, so not catastrophic), but the precedent meant a future `SERVICE_ROLE_KEY` would commit by default — fixed at the pattern level.
 
 ### Known issues (documented in THREAT_MODEL.md)
-- **Cookie consent.** Google Analytics + AdSense scripts currently load on page-load before any consent. UK PECR / GDPR compliance work is queued but not yet shipped — see `DECISIONS.md` 2026-04-27.
-- **Multi-domain SEO.** Canonical URL is fixed to `911callsimulator.com`; `999callsimulator.com` UK traffic loses ranking equity. Proper fix is server-side `hreflang` per domain.
-- **Tests.** No automated tests yet. Scenario routing, prompt construction, rate-limit math, and call state machine are the priority targets.
+- **Vercel Analytics (R5-prime).** `@vercel/analytics` (`<Analytics />` in `src/App.tsx`) fires unconditionally on every page load with no consent gate. GA and AdSense are correctly gated; Vercel Analytics is not. Needs either removal or consent-gating + sub-processor disclosure. See THREAT_MODEL.md R5-prime.
+- **Tests.** Initial seed suite (13 tests in `src/utils/`) exists and passes. Core test-plan targets — scenario routing, dispatcher prompt construction, rate-limit math, and the `useEmergencyCall` state machine — are undelivered (0% coverage). Test runner (`tsx`) must be available in the execution environment; not available on the VPC host as of 2026-05-20.

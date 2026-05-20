@@ -4,9 +4,9 @@
 
 A realistic, AI-powered dispatcher role-plays real emergency scenarios so children can practise what to say and stay calm — without tying up a real emergency line. Designed for parents, schools, and safeguarding programmes.
 
-> 🚀 **Try it live:** [911callsimulator.com](https://911callsimulator.com) (🇺🇸) or [999callsimulator.com](https://999callsimulator.com) (🇬🇧)
+> 🚀 **Try it live:** [911callsimulator.com](https://911callsimulator.com) (🇺🇸), [999callsimulator.com](https://999callsimulator.com) (🇬🇧), or [999callbuddy.com](https://999callbuddy.com) (🇬🇧 alt)
 >
-> **Phase:** Operate (with carry-over Validate debt — no automated tests yet). See [Governance](#governance) below.
+> **Phase:** Operate (with carry-over Validate debt — seed test suite exists but core test targets undelivered). See [Governance](#governance) below.
 
 ## Why this exists
 
@@ -35,7 +35,7 @@ Kids are told "call 999 / 911 in an emergency" but almost never get to practise.
 - It's a simulator. It **does not** connect to real emergency services. The dispatcher is an AI; the call is a role-play.
 - No account required. We don't store conversations on our servers.
 - **Voice is processed by a third-party AI sub-processor:** when the child speaks, audio streams over WebRTC to **ElevenLabs** (an AI voice/conversation provider) for speech-to-text, dialogue, and text-to-speech. Their retention and use of conversation data is governed by [ElevenLabs' privacy policy](https://elevenlabs.io/privacy-policy). It is *not* true that "no data leaves the device" — voice data does, by design, in order to deliver the AI dispatcher.
-- **Sub-processors used by this site:** ElevenLabs (voice & dialogue), Supabase (rate-limit table for the token endpoint), Google Analytics (anonymous usage), Google AdSense (advertising), Cloudflare/Vercel (hosting).
+- **Sub-processors used by this site:** ElevenLabs (voice & dialogue), Supabase (rate-limit table for the token endpoint), Google Analytics (consent-gated usage analytics), Google AdSense (consent-gated advertising), Vercel Analytics (unconditional page-view analytics — consent gating pending), Cloudflare/Vercel (hosting).
 
 For the full picture, see the in-tree [`THREAT_MODEL.md`](./THREAT_MODEL.md) and the on-site [Privacy Policy](https://911callsimulator.com/privacy).
 
@@ -86,11 +86,11 @@ This project is a free, public tool aimed at children. It carries the same gover
 | Phase | Status | What |
 |---|---|---|
 | Frame | ✅ complete | Threat model, this README, audience and scope defined. |
-| Data | ✅ complete | Voice + scenario context flow documented; sub-processors named. |
-| Pipeline | ✅ complete | Edge-function token mint, IP-hashed rate limit, CORS allowlist. |
-| Build | ✅ complete | Vite/React/shadcn frontend, ElevenLabs WebRTC integration, scenario routing, ring-then-connect UX. |
-| Validate | 🟡 debt | **No automated tests yet.** Manual smoke-tested across scenarios on desktop + mobile. Test plan documented in `DECISIONS.md`. |
-| Operate | ✅ live | Deployed on the public web at the two domains above. |
+| Data | 🔴 loopback | Vercel Analytics fires unconditionally (undisclosed sub-processor, active PECR gap). COPPA/AdSense assurance in Privacy.tsx contradicts THREAT_MODEL.md. |
+| Pipeline | 🔴 loopback | No CI/CD pipeline (no GitHub Actions). No pre-commit hooks. Bun lockfile may not be used in production Vercel builds. |
+| Build | 🔴 loopback | TypeScript strict mode disabled (`strict: false`). Dead dependencies (`@tanstack/react-query`, `@elevenlabs/client`, 43 unused shadcn/ui components). CORS allowlist uses substring-match, not exact-match. |
+| Validate | 🔴 loopback | Seed test suite (13 tests, utilities only). 4/4 named test-plan targets (state machine, rate-limit math, scenario routing, prompt construction) undelivered. Test runner (`tsx`) not available in current host environment. |
+| Operate | ✅ live (degraded) | Deployed across three domains. `999callbuddy.com` voice feature broken — absent from CORS allowlist, returns `{"error":"Unauthorized origin"}`. No real-browser uptime monitoring. |
 
 ### Outcome metrics
 
