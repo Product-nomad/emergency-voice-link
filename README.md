@@ -45,7 +45,7 @@ For the full picture, see the in-tree [`THREAT_MODEL.md`](./THREAT_MODEL.md) and
 - [ElevenLabs Conversational AI](https://elevenlabs.io/conversational-ai) — voice + LLM dispatcher (WebRTC)
 - [Supabase](https://supabase.com) — Edge Function for token minting + rate-limit table
 - [Bun](https://bun.sh) — local dev runtime
-- Deployed via Cloudflare Pages (`wrangler.toml`); `vercel.json` adds security headers if hosted there instead
+- Deployed via **Vercel** (one project per production domain; `vercel.json` adds security headers). `wrangler.toml` is kept in tree so Cloudflare Pages remains a viable alternative host.
 
 ## Getting started
 
@@ -58,6 +58,24 @@ bun run dev
 Open the URL the dev server prints.
 
 > Server-side secrets (the ElevenLabs API key, the Supabase service role key, the ElevenLabs agent ID) live in the **Supabase Edge Function environment**, not in `.env`. `.env` is for the public-by-design `VITE_*` Supabase client values only.
+
+## Deploying
+
+The live site runs on **Vercel** with one project per production domain. The repo also keeps `wrangler.toml` so Cloudflare Pages remains a viable alternative host.
+
+### Required env vars on the host
+
+Before the first build of any new deployment (any Vercel or Cloudflare Pages project), set these three on the host:
+
+| Key | Source |
+|---|---|
+| `VITE_SUPABASE_URL` | Supabase project → Settings → API → Project URL |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase project → Settings → API → anon / public key |
+| `VITE_SUPABASE_PROJECT_ID` | The subdomain prefix of the Supabase Project URL |
+
+These are public-by-design — the same values that ship to every browser via `import.meta.env.VITE_*`. Server-side secrets (`ELEVENLABS_API_KEY`, the Supabase service role key, `ELEVENLABS_AGENT_ID`) belong in the Supabase Edge Function environment, never here.
+
+> **Failure mode if you forget:** the build still succeeds and the site serves HTTP 200, but every page is blank — Supabase's `createClient` throws `supabaseUrl is required` at module load, before React mounts. Uptime checks won't catch it. See the 2026-05-20 entry in `DECISIONS.md`.
 
 ## Governance
 
