@@ -4,7 +4,7 @@ Phase: **Frame** (this document is one of the gate artefacts).
 
 ## Scope
 
-The web UI, Supabase edge function, and conversational AI integration that together deliver a free 911/999 call simulator for children aged ~5–12, hosted at `911callsimulator.com` and `999callsimulator.com`.
+The web UI, Supabase edge function, and conversational AI integration that together deliver a free 911/999 call simulator for children aged ~5–12, hosted at `911callsimulator.com`, `999callsimulator.com`, and `999callbuddy.com`.
 
 In scope: client-side React app, Supabase Edge Function (`elevenlabs-conversation-token`), Supabase Postgres rate-limit table, the ElevenLabs voice/AI integration as a sub-processor, and the analytics + ad scripts loaded at the page level.
 
@@ -49,16 +49,16 @@ Browser opens WebRTC channel to ElevenLabs ◄── voice in/out streams here
 | R2 | Origin spoofing of edge function | CORS allowlist + 403 on unrecognised origin. |
 | R3 | Token-mint abuse from a single source | IP-hashed rate limit, 10 requests / 60 min / IP, persisted in Supabase. |
 | R4 | Voice / chat data retained or used to train models by the sub-processor | **Documented, not mitigated.** Disclosure must be in the user-facing privacy policy; users (and parents) need to know ElevenLabs is in the path. |
-| R5 | Analytics + ads firing without user consent | **Open gap (high priority).** UK PECR / GDPR require prior consent for non-strictly-necessary cookies. Currently GA + AdSense scripts load on page-load regardless of cookie banner state. See DECISIONS 2026-04-27. |
+| R5 | Analytics + ads firing without user consent | **Mitigated for GA + AdSense (2026-04-27, commit e081a31).** Both scripts are now deferred via `src/utils/consent.ts` and load only after explicit user consent. **R5-prime (open gap):** `@vercel/analytics` (`<Analytics />` in `src/App.tsx`) fires unconditionally on every page load with no consent gate and is not disclosed as a sub-processor. |
 | R6 | Children's PII captured incidentally in voice (names, addresses spoken aloud during scenarios) | Conversation never stored by us. Sub-processor retention per R4. |
-| R7 | Cross-domain SEO confusion (`.com` vs `.co.uk`/999 routing) | **Open gap.** Canonical URL is fixed to `911callsimulator.com`; UK searches lose ranking equity. |
+| R7 | Cross-domain SEO confusion (`.com` vs `.co.uk`/999 routing) | **Mitigated (2026-04-27, commit e081a31).** `src/components/SeoCanonical.tsx` now injects per-domain `<link rel="canonical">` and `hreflang en-US / en-GB / x-default` at the router level. Each domain self-canonicalises. |
 | R8 | Public-by-design Supabase anon key committed to repo history | Acceptable per Supabase's design (anon keys are public; security relies on Row-Level Security). `.gitignore` updated 2026-04-27 to prevent future server-side secret leakage. |
 
 ## Known gaps
 
 - No automated tests covering scenario routing, dispatcher prompt construction, rate-limit math, or the call-state machine.
 - Privacy page wording does not yet name ElevenLabs as a sub-processor (work pending — requires user sign-off because it's a legal document).
-- Cookie consent banner exists in component tree but does not gate analytics/ad script loading.
+- `@vercel/analytics` (`<Analytics />` in `src/App.tsx`) fires unconditionally on every page load with no consent gate — the active R5-prime gap. GA and AdSense are correctly gated via `src/utils/consent.ts` but Vercel Analytics is not.
 - No formal Made-for-Families or COPPA configuration on the AdSense account verified in tree.
 
 ## Adversarial considerations
