@@ -15,6 +15,11 @@ export type ConsentState = "accepted" | "declined" | "unknown";
 
 export const CONSENT_KEY = "cookies-accepted";
 
+// Fired on window whenever the user's consent decision changes, so
+// components (e.g. the consent-gated <Analytics /> in App.tsx) can
+// react without polling localStorage.
+export const CONSENT_CHANGE_EVENT = "cookie-consent-changed";
+
 const GA_MEASUREMENT_ID = "G-51DDNPLJSB";
 const ADSENSE_CLIENT_ID = "ca-pub-1138854450517299";
 

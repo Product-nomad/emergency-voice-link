@@ -2,6 +2,29 @@
 
 All notable user-visible changes. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased] — 2026-07-30
+
+### Fixed
+- **`999callbuddy.com` self-canonicalisation bug.** `SeoCanonical.tsx` and
+  `Index.tsx`'s JSON-LD only recognised two of the three production domains;
+  `999callbuddy.com` fell through and self-canonicalised to
+  `911callsimulator.com`, meaning none of that domain's own traffic ever
+  accrued as ranking signal to itself. Domain resolution extracted to
+  `src/utils/domain.ts` and extended to all three domains.
+- **Fabricated `aggregateRating` removed** from `Index.tsx`'s JSON-LD
+  (4.9★ / 150 ratings, no underlying data). Risked a Google structured-data
+  manual action across all three domains.
+- **`@vercel/analytics` now consent-gated**, closing THREAT_MODEL R5-prime.
+  Previously fired unconditionally regardless of the cookie banner's state.
+
+### Added
+- **`scripts/generate-sitemap.mjs`** — post-build step writing an
+  absolute-URL `sitemap.xml` and a matching `robots.txt` `Sitemap:` line,
+  scoped to whichever domain the build's new `VITE_SITE_URL` env var names.
+  No-op (safe fallback) if unset.
+- **`public/robots.txt`** — didn't exist before; ships a permissive
+  `Allow: /` with a relative `Sitemap:` fallback.
+
 ## [Unreleased] — 2026-04-27 (afternoon)
 
 ### Added

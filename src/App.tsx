@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,7 +16,11 @@ import Resources from "./pages/Resources";
 import About from "./pages/About";
 import Privacy from "./pages/Privacy";
 import SeoCanonical from "./components/SeoCanonical";
-import { loadAnalyticsIfConsented } from "./utils/consent";
+import {
+  CONSENT_CHANGE_EVENT,
+  getConsentState,
+  loadAnalyticsIfConsented,
+} from "./utils/consent";
 
 const queryClient = new QueryClient();
 
@@ -24,8 +28,17 @@ const App = () => {
   // If the user accepted cookies in a prior session, load analytics
   // immediately. New visitors see the cookie banner first; analytics
   // only loads when they click Accept.
+  const [analyticsConsented, setAnalyticsConsented] = useState(
+    () => typeof window !== "undefined" && getConsentState(window.localStorage) === "accepted",
+  );
+
   useEffect(() => {
     loadAnalyticsIfConsented();
+
+    const syncConsent = () =>
+      setAnalyticsConsented(getConsentState(window.localStorage) === "accepted");
+    window.addEventListener(CONSENT_CHANGE_EVENT, syncConsent);
+    return () => window.removeEventListener(CONSENT_CHANGE_EVENT, syncConsent);
   }, []);
 
   return (
@@ -48,7 +61,7 @@ const App = () => {
               <Route path="/privacy" element={<Privacy />} />
             </Routes>
           </BrowserRouter>
-          <Analytics />
+          {analyticsConsented && <Analytics />}
         </TooltipProvider>
       </QueryClientProvider>
     </HelmetProvider>
