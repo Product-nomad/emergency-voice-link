@@ -42,7 +42,7 @@ For the full picture, see the in-tree [`THREAT_MODEL.md`](./THREAT_MODEL.md) and
 ## Stack
 
 - [Vite](https://vitejs.dev) + React + TypeScript + [shadcn/ui](https://ui.shadcn.com) + Tailwind — frontend
-- [ElevenLabs Conversational AI](https://elevenlabs.io/conversational-ai) — voice + LLM dispatcher (WebRTC)
+- [ElevenLabs Conversational AI](https://elevenlabs.io/conversational-ai) — voice + LLM dispatcher (WebRTC), via the maintained `@elevenlabs/react` client (migrated 2026-07-30 from the deprecated `@11labs/react@0.2.0`)
 - [Supabase](https://supabase.com) — Edge Function for token minting + rate-limit table
 - [Bun](https://bun.sh) — local dev runtime
 - Deployed via **Vercel** (one project per production domain; `vercel.json` adds security headers). `wrangler.toml` is kept in tree so Cloudflare Pages remains a viable alternative host.
@@ -89,7 +89,7 @@ This project is a free, public tool aimed at children. It carries the same gover
 | Frame | ✅ complete | Threat model, this README, audience and scope defined. |
 | Data | 🔴 loopback | Vercel Analytics now consent-gated (2026-07-30, closes R5-prime). COPPA/AdSense assurance in Privacy.tsx still contradicts THREAT_MODEL.md. |
 | Pipeline | 🔴 loopback | No CI/CD pipeline (no GitHub Actions). No pre-commit hooks. Bun lockfile may not be used in production Vercel builds. |
-| Build | 🔴 loopback | TypeScript strict mode disabled (`strict: false`). Dead dependencies (`@tanstack/react-query`, 43 unused shadcn/ui components). `@elevenlabs/client` looked dead (unimported in `src/`) but isn't — `@11labs/react`'s compiled bundle imports it directly at runtime, undeclared in that package's own `package.json`; confirmed 2026-07-30 by an actual `vite build` failure when removed, not caught by `tsc --noEmit`. CORS allowlist uses substring-match, not exact-match. |
+| Build | 🔴 loopback | TypeScript strict mode disabled (`strict: false`). Dead dependencies (`@tanstack/react-query`, 43 unused shadcn/ui components). CORS allowlist uses substring-match, not exact-match. |
 | Validate | 🔴 loopback | Seed test suite (13 tests, utilities only). 4/4 named test-plan targets (state machine, rate-limit math, scenario routing, prompt construction) undelivered. Test runner (`tsx`) not available in current host environment. |
 | Operate | ✅ live (degraded) | Deployed across three domains. `999callbuddy.com` voice feature broken — absent from CORS allowlist, returns `{"error":"Unauthorized origin"}` (fix in PR #3, pending deploy). `999callbuddy.com` was also self-canonicalising to `911callsimulator.com` in all SEO surfaces — fixed 2026-07-30, but needs `VITE_SITE_URL` seeded on each Vercel project (see table above) before `sitemap.xml` generation takes effect. No real-browser uptime monitoring. |
 

@@ -2,6 +2,18 @@
 
 All notable user-visible changes. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased] — 2026-07-30 (ElevenLabs SDK migration)
+
+### Changed
+- **`@11labs/react` (`0.2.0`, deprecated) replaced with `@elevenlabs/react`
+  (`1.12.0`).** Requires a new `<ConversationProvider>` ancestor (added in
+  `App.tsx`). `useEmergencyCall.ts` rewritten: `startSession()` is now
+  fire-and-forget instead of an awaited promise, connection success/failure
+  routes entirely through `onConnect`/`onError`, and `onError`'s signature
+  changed from `(error)` to `(message, context)`. **Needs a real device
+  smoke-test against a live agent before merging** — not verifiable from an
+  agentic coding environment; see DECISIONS.md 2026-07-30 entry.
+
 ## [Unreleased] — 2026-07-30 (latency)
 
 ### Changed

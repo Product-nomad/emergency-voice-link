@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Analytics } from "@vercel/analytics/react";
+import { ConversationProvider } from "@elevenlabs/react";
 import Index from "./pages/Index";
 import Feedback from "./pages/Feedback";
 import Guide from "./pages/Guide";
@@ -44,25 +45,27 @@ const App = () => {
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <SeoCanonical />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/feedback" element={<Feedback />} />
-              <Route path="/guide" element={<Guide />} />
-              <Route path="/scripts" element={<Scripts />} />
-              <Route path="/protocol" element={<Protocol />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/resources" element={<Resources />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/privacy" element={<Privacy />} />
-            </Routes>
-          </BrowserRouter>
-          {analyticsConsented && <Analytics />}
-        </TooltipProvider>
+        <ConversationProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <SeoCanonical />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/feedback" element={<Feedback />} />
+                <Route path="/guide" element={<Guide />} />
+                <Route path="/scripts" element={<Scripts />} />
+                <Route path="/protocol" element={<Protocol />} />
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/resources" element={<Resources />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/privacy" element={<Privacy />} />
+              </Routes>
+            </BrowserRouter>
+            {analyticsConsented && <Analytics />}
+          </TooltipProvider>
+        </ConversationProvider>
       </QueryClientProvider>
     </HelmetProvider>
   );
