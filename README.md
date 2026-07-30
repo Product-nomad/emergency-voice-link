@@ -35,7 +35,7 @@ Kids are told "call 999 / 911 in an emergency" but almost never get to practise.
 - It's a simulator. It **does not** connect to real emergency services. The dispatcher is an AI; the call is a role-play.
 - No account required. We don't store conversations on our servers.
 - **Voice is processed by a third-party AI sub-processor:** when the child speaks, audio streams over WebRTC to **ElevenLabs** (an AI voice/conversation provider) for speech-to-text, dialogue, and text-to-speech. Their retention and use of conversation data is governed by [ElevenLabs' privacy policy](https://elevenlabs.io/privacy-policy). It is *not* true that "no data leaves the device" — voice data does, by design, in order to deliver the AI dispatcher.
-- **Sub-processors used by this site:** ElevenLabs (voice & dialogue), Supabase (rate-limit table for the token endpoint), Google Analytics (consent-gated usage analytics), Google AdSense (consent-gated advertising), Vercel Analytics (unconditional page-view analytics — consent gating pending), Cloudflare/Vercel (hosting).
+- **Sub-processors used by this site:** ElevenLabs (voice & dialogue), Supabase (feedback message storage only, as of 2026-07-30 — the token-minting function and its rate-limit table were migrated off Supabase entirely, see `DECISIONS.md`), Google Analytics (consent-gated usage analytics), Google AdSense (consent-gated advertising), Vercel Analytics (unconditional page-view analytics — consent gating pending), Cloudflare/Vercel (hosting).
 
 For the full picture, see the in-tree [`THREAT_MODEL.md`](./THREAT_MODEL.md) and the on-site [Privacy Policy](https://911callsimulator.com/privacy).
 
@@ -43,9 +43,10 @@ For the full picture, see the in-tree [`THREAT_MODEL.md`](./THREAT_MODEL.md) and
 
 - [Vite](https://vitejs.dev) + React + TypeScript + [shadcn/ui](https://ui.shadcn.com) + Tailwind — frontend
 - [ElevenLabs Conversational AI](https://elevenlabs.io/conversational-ai) — voice + LLM dispatcher (WebRTC), via the maintained `@elevenlabs/react` client (migrated 2026-07-30 from the deprecated `@11labs/react@0.2.0`)
-- [Supabase](https://supabase.com) — Edge Function for token minting + rate-limit table
+- **Vercel Edge Function** (`api/elevenlabs-conversation-token.ts`) — mints the short-lived ElevenLabs WebRTC token, holding `ELEVENLABS_API_KEY` server-side. Migrated 2026-07-30 from a Supabase Edge Function of the same name — see `DECISIONS.md`. Served from the same domain as the frontend, so the browser's request is same-origin; no CORS allowlist needed (the previous version's allowlist was the cause of two separate `999callbuddy.com` bugs).
+- [Supabase](https://supabase.com) — Postgres storage for the `/feedback` page only. No longer in the call path.
 - [Bun](https://bun.sh) — local dev runtime
-- Deployed via **Vercel** (one project per production domain; `vercel.json` adds security headers). `wrangler.toml` is kept in tree so Cloudflare Pages remains a viable alternative host.
+- Deployed via **Vercel** (one project per production domain; `vercel.json` adds security headers). `wrangler.toml` is kept in tree so Cloudflare Pages remains a viable alternative host — note that the `api/` Edge Function is Vercel-specific and would need a Cloudflare Pages Functions equivalent if that alternative is ever actually used.
 
 ## Getting started
 
@@ -57,7 +58,9 @@ bun run dev
 
 Open the URL the dev server prints.
 
-> Server-side secrets (the ElevenLabs API key, the Supabase service role key, the ElevenLabs agent ID) live in the **Supabase Edge Function environment**, not in `.env`. `.env` is for the public-by-design `VITE_*` Supabase client values only.
+> Server-side secrets (`ELEVENLABS_API_KEY`, `ELEVENLABS_AGENT_ID`) live in each **Vercel project's environment variables**, not in `.env`. `.env` is for the public-by-design `VITE_*` Supabase client values only (Supabase is still used for `/feedback` storage).
+>
+> **Local dev limitation:** `bun run dev` runs the plain Vite dev server, which does not execute `api/` Edge Functions — dialing 911/999 locally will 404 against `/api/elevenlabs-conversation-token`. To test a real call locally, run `vercel dev` instead (reads `ELEVENLABS_API_KEY`/`ELEVENLABS_AGENT_ID` from `vercel env pull` or a local `.env`), or just test against a Vercel preview deploy.
 
 ## Deploying
 
@@ -74,7 +77,14 @@ Before the first build of any new deployment (any Vercel or Cloudflare Pages pro
 | `VITE_SUPABASE_PROJECT_ID` | The subdomain prefix of the Supabase Project URL |
 | `VITE_SITE_URL` | This deployment's own production domain, e.g. `https://999callbuddy.com`. Used by `scripts/generate-sitemap.mjs` to emit a `sitemap.xml` scoped to the right domain — each of the three production domains is a separate Vercel project and needs its own value. |
 
-These are public-by-design — the same values that ship to every browser via `import.meta.env.VITE_*`. Server-side secrets (`ELEVENLABS_API_KEY`, the Supabase service role key, `ELEVENLABS_AGENT_ID`) belong in the Supabase Edge Function environment, never here.
+These are public-by-design — the same values that ship to every browser via `import.meta.env.VITE_*`.
+
+Also required, per Vercel project, as plain (non-`VITE_`-prefixed) **server-side** environment variables — these never reach the client bundle and must never be added with the `VITE_` prefix:
+
+| Key | Source |
+|---|---|
+| `ELEVENLABS_API_KEY` | ElevenLabs dashboard → API keys |
+| `ELEVENLABS_AGENT_ID` | ElevenLabs dashboard → your Conversational AI agent |
 
 > **Failure mode if you forget:** the build still succeeds and the site serves HTTP 200, but every page is blank — Supabase's `createClient` throws `supabaseUrl is required` at module load, before React mounts. Uptime checks won't catch it. See the 2026-05-20 entry in `DECISIONS.md`.
 
@@ -89,15 +99,15 @@ This project is a free, public tool aimed at children. It carries the same gover
 | Frame | ✅ complete | Threat model, this README, audience and scope defined. |
 | Data | 🔴 loopback | Vercel Analytics now consent-gated (2026-07-30, closes R5-prime). COPPA/AdSense assurance in Privacy.tsx still contradicts THREAT_MODEL.md. |
 | Pipeline | 🔴 loopback | No CI/CD pipeline (no GitHub Actions). No pre-commit hooks. Bun lockfile may not be used in production Vercel builds. |
-| Build | 🔴 loopback | TypeScript strict mode disabled (`strict: false`). Dead dependencies (`@tanstack/react-query`, 43 unused shadcn/ui components). CORS allowlist uses substring-match, not exact-match. |
-| Validate | 🔴 loopback | Seed test suite (13 tests, utilities only). 4/4 named test-plan targets (state machine, rate-limit math, scenario routing, prompt construction) undelivered. Test runner (`tsx`) not available in current host environment. |
-| Operate | ✅ live (degraded) | Deployed across three domains. `999callbuddy.com` voice feature broken — absent from CORS allowlist, returns `{"error":"Unauthorized origin"}` (fix in PR #3, pending deploy). `999callbuddy.com` was also self-canonicalising to `911callsimulator.com` in all SEO surfaces — fixed 2026-07-30, but needs `VITE_SITE_URL` seeded on each Vercel project (see table above) before `sitemap.xml` generation takes effect. No real-browser uptime monitoring. |
+| Build | 🔴 loopback | TypeScript strict mode disabled (`strict: false`). Dead dependencies (`@tanstack/react-query`, 43 unused shadcn/ui components). |
+| Validate | 🔴 loopback | Seed test suite (13 tests, utilities only). Named test-plan targets (state machine, scenario routing, prompt construction) undelivered — rate-limit math is no longer a target now that DB-backed rate limiting is gone (2026-07-30). Test runner (`tsx`) not available in current host environment. |
+| Operate | ✅ live (degraded) | Deployed across three domains. `999callbuddy.com`'s CORS-allowlist bug is now moot: the token-mint function moved to a same-origin Vercel Edge Function (2026-07-30), which has no allowlist to be absent from. `999callbuddy.com` was also self-canonicalising to `911callsimulator.com` in all SEO surfaces — fixed 2026-07-30, but needs `VITE_SITE_URL` seeded on each Vercel project (see table above) before `sitemap.xml` generation takes effect. No real-browser uptime monitoring. |
 
 ### Outcome metrics
 
 1. **First-response latency.** Dispatcher's first audible response < 800ms from end-of-child-utterance. Still ad-hoc — formal measurement pending. *(Validate-phase debt.)* **Related but distinct metric now measured (2026-07-30):** call-*setup* latency (dial → token ready, dial → WebRTC connected) is reported to GA as a `call_latency` event (`src/utils/googleAds.ts`) instead of only `console.log`. This covers time-to-connect, not the per-utterance dispatcher response time the metric above describes — that still needs instrumentation on the ElevenLabs agent side.
 2. **Scenario completion rate.** Child reaches end-of-call feedback in ≥ 70% of started sessions. Tracked via Google Analytics.
-3. **Cost per session.** ElevenLabs spend / completed session ≤ £0.05 (sets the rate-limit calibration in the Edge Function). Verified at month-end against ElevenLabs billing.
+3. **Cost per session.** ElevenLabs spend / completed session ≤ £0.05. Verified at month-end against ElevenLabs billing. As of 2026-07-30, ElevenLabs' own account-level spend cap is the *sole* abuse backstop (see `DECISIONS.md`) — no app-level rate limiting exists any more, so this metric is also the early-warning signal if that backstop isn't tight enough.
 
 ### Ethical posture
 
