@@ -2,6 +2,15 @@
 
 All notable user-visible changes. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased] — 2026-07-30 (agent response-latency metric)
+
+### Added
+- **Per-utterance agent response latency now measured**, closing README's
+  previously-unmeasured outcome metric #1. `useEmergencyCall.ts` times from
+  the child's last detected speech (`onVadScore`) to the agent's first audio
+  chunk (`onAudio`), reported to GA as `agent_response_latency`. Mostly
+  reflects ElevenLabs agent-pipeline time, not app code — see DECISIONS.md.
+
 ## [Unreleased] — 2026-07-30 (drop Supabase from the call path)
 
 ### Changed
