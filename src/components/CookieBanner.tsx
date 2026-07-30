@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
+  CONSENT_CHANGE_EVENT,
   CONSENT_KEY,
   getConsentState,
   loadAnalytics,
@@ -23,11 +24,13 @@ const CookieBanner = () => {
   const handleAccept = () => {
     setConsent(window.localStorage, "accepted");
     loadAnalytics();
+    window.dispatchEvent(new Event(CONSENT_CHANGE_EVENT));
     setVisible(false);
   };
 
   const handleDecline = () => {
     setConsent(window.localStorage, "declined");
+    window.dispatchEvent(new Event(CONSENT_CHANGE_EVENT));
     setVisible(false);
   };
 

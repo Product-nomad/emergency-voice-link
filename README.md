@@ -65,13 +65,14 @@ The live site runs on **Vercel** with one project per production domain. The rep
 
 ### Required env vars on the host
 
-Before the first build of any new deployment (any Vercel or Cloudflare Pages project), set these three on the host:
+Before the first build of any new deployment (any Vercel or Cloudflare Pages project), set these on the host:
 
 | Key | Source |
 |---|---|
 | `VITE_SUPABASE_URL` | Supabase project → Settings → API → Project URL |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase project → Settings → API → anon / public key |
 | `VITE_SUPABASE_PROJECT_ID` | The subdomain prefix of the Supabase Project URL |
+| `VITE_SITE_URL` | This deployment's own production domain, e.g. `https://999callbuddy.com`. Used by `scripts/generate-sitemap.mjs` to emit a `sitemap.xml` scoped to the right domain — each of the three production domains is a separate Vercel project and needs its own value. |
 
 These are public-by-design — the same values that ship to every browser via `import.meta.env.VITE_*`. Server-side secrets (`ELEVENLABS_API_KEY`, the Supabase service role key, `ELEVENLABS_AGENT_ID`) belong in the Supabase Edge Function environment, never here.
 
@@ -86,11 +87,11 @@ This project is a free, public tool aimed at children. It carries the same gover
 | Phase | Status | What |
 |---|---|---|
 | Frame | ✅ complete | Threat model, this README, audience and scope defined. |
-| Data | 🔴 loopback | Vercel Analytics fires unconditionally (undisclosed sub-processor, active PECR gap). COPPA/AdSense assurance in Privacy.tsx contradicts THREAT_MODEL.md. |
+| Data | 🔴 loopback | Vercel Analytics now consent-gated (2026-07-30, closes R5-prime). COPPA/AdSense assurance in Privacy.tsx still contradicts THREAT_MODEL.md. |
 | Pipeline | 🔴 loopback | No CI/CD pipeline (no GitHub Actions). No pre-commit hooks. Bun lockfile may not be used in production Vercel builds. |
 | Build | 🔴 loopback | TypeScript strict mode disabled (`strict: false`). Dead dependencies (`@tanstack/react-query`, `@elevenlabs/client`, 43 unused shadcn/ui components). CORS allowlist uses substring-match, not exact-match. |
 | Validate | 🔴 loopback | Seed test suite (13 tests, utilities only). 4/4 named test-plan targets (state machine, rate-limit math, scenario routing, prompt construction) undelivered. Test runner (`tsx`) not available in current host environment. |
-| Operate | ✅ live (degraded) | Deployed across three domains. `999callbuddy.com` voice feature broken — absent from CORS allowlist, returns `{"error":"Unauthorized origin"}`. No real-browser uptime monitoring. |
+| Operate | ✅ live (degraded) | Deployed across three domains. `999callbuddy.com` voice feature broken — absent from CORS allowlist, returns `{"error":"Unauthorized origin"}` (fix in PR #3, pending deploy). `999callbuddy.com` was also self-canonicalising to `911callsimulator.com` in all SEO surfaces — fixed 2026-07-30, but needs `VITE_SITE_URL` seeded on each Vercel project (see table above) before `sitemap.xml` generation takes effect. No real-browser uptime monitoring. |
 
 ### Outcome metrics
 

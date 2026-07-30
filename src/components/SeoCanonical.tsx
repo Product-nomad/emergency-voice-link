@@ -1,32 +1,34 @@
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
+import { US_DOMAIN, UK_DOMAIN, getCurrentDomainBase } from "@/utils/domain";
 
 /**
- * Per-domain canonical + hreflang for the dual-domain deployment
- * (911callsimulator.com → US, 999callsimulator.com → UK).
+ * Per-domain canonical + hreflang for the three-domain deployment
+ * (911callsimulator.com → US, 999callsimulator.com → UK,
+ * 999callbuddy.com → UK alt).
  *
  * Mounted once at the top of the app. Each domain self-canonicalises:
- * a UK visitor on 999callsimulator.com sees `<link rel="canonical"
- * href="https://999callsimulator.com/...">`, so search engines preserve
- * UK ranking equity instead of redirecting all signal to the .com.
+ * a visitor on any of the three domains sees a `<link rel="canonical">`
+ * pointing at that same domain, so search engines credit ranking
+ * signal to the domain that was actually visited instead of funnelling
+ * it all to 911callsimulator.com.
  *
- * `hreflang` tells search engines which domain to surface for which
- * audience — `en-US` → 911, `en-GB` → 999, `x-default` → 911 as fallback.
+ * `hreflang` alternates only ever point at the two "primary" domains
+ * (en-US → 911, en-GB → 999callsimulator) — 999callbuddy.com is an
+ * alternate UK domain, not a distinct locale, so it isn't listed as
+ * an hreflang target (a language/region should have one canonical
+ * hreflang destination, not two competing ones).
  *
  * Individual page components must NOT set their own `<link rel="canonical">`
  * inside `<Helmet>` or this top-level value will be overridden / duplicated.
  */
-const US_DOMAIN = "https://911callsimulator.com";
-const UK_DOMAIN = "https://999callsimulator.com";
-
 const SeoCanonical = () => {
   const { pathname } = useLocation();
 
   // Determine current host. SSR-safe fallback to US domain.
   const host = typeof window !== "undefined" ? window.location.hostname : "";
-  const isUK = host.includes("999callsimulator");
+  const baseForCurrent = getCurrentDomainBase(host);
 
-  const baseForCurrent = isUK ? UK_DOMAIN : US_DOMAIN;
   const canonical = `${baseForCurrent}${pathname}`;
   const usHref = `${US_DOMAIN}${pathname}`;
   const ukHref = `${UK_DOMAIN}${pathname}`;
