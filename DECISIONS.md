@@ -2,6 +2,18 @@
 
 One paragraph per decision, dated. Records the *why* so the same call doesn't get re-litigated.
 
+## 2026-07-30 — Parallelise rate-limit check with the ElevenLabs token fetch; make the rate-limit write non-blocking
+
+`elevenlabs-conversation-token`'s handler ran the rate-limit `SELECT count`, then the rate-limit `INSERT`, then the ElevenLabs token fetch — three sequential round-trips before every session start. Changed to: run the rate-limit read and the ElevenLabs fetch concurrently via `Promise.all` (minting a token costs nothing on its own — ElevenLabs spend happens once a conversation actually starts — so there's no cost risk in fetching it before the rate-limit verdict is known; a token fetched for a caller who turns out to be over-limit is simply discarded), and hand the rate-limit write off to `EdgeRuntime.waitUntil()` rather than awaiting it before responding. *Why `waitUntil` and not a bare fire-and-forget `.then()`:* Deno Deploy (which Supabase Edge Functions run on) can freeze the isolate the instant a response is returned, so an un-awaited promise can silently lose the race and never actually write — `waitUntil` is the platform's documented mechanism for guaranteeing background work completes after the response is sent. Removes 1–2 sequential DB round-trips from the cold path (no cached client-side token — first call of a session, or after the 5-minute cache expiry).
+
+## 2026-07-30 — `@elevenlabs/client` looked like a dead dependency; it isn't
+
+Initially removed `@elevenlabs/client` from `package.json` as unused (nothing in `src/` imports it, and `@11labs/react`'s own `package.json` declares a dependency on `@11labs/client`, not `@elevenlabs/client`). `tsc --noEmit` stayed clean after removal. A real `vite build` then failed: `@11labs/react`'s compiled `dist/lib.modern.js` imports `@elevenlabs/client` directly at the module level — an undeclared runtime dependency of that package's build output, invisible to both grep and the type checker. Restored the dependency. *Lesson:* a dependency with zero source-level imports is not proof it's dead when a pinned pre-built package is in the tree — a real production build is the only reliable check, and `tsc --noEmit` alone would have shipped a broken bundle. `README.md`'s Build-phase debt line corrected to stop calling this one dead.
+
+## 2026-07-30 — Report call-setup latency to GA instead of only `console.log`
+
+README's outcome metric #1 ("dispatcher first response < 800ms") was marked "ad-hoc, formal measurement pending" despite `useEmergencyCall.ts` already computing both `tokenMs` (dial → token ready) and `connectedMs` (dial → WebRTC connected) via `performance.now()` — the numbers just went to `console.log` and nowhere else, invisible in production. Added `trackCallLatency()` in `src/utils/googleAds.ts` (same file as the existing `trackConversion` gtag call, same no-op-until-consented behaviour since it only fires if `window.gtag` is defined) and call it once a session connects. Turns the outcome metric into something checkable in GA rather than a number nobody sees past a local dev console.
+
 ## 2026-04-27 — Adopt phase-gated governance with explicit outcome metrics
 
 Adopted a phased delivery model — Frame → Data → Pipeline → Build → Validate → Operate — with explicit gates and named artefacts (this `DECISIONS.md` is one). Inspired by established industry frameworks for managing AI / data projects but stated in this project's own vocabulary rather than borrowing any framework's branding wholesale. *Alternatives considered:* ad-hoc / ship-when-it-works. *Why rejected:* this is a children's tool with sub-processors in the data path; "ship when it works" has no place to put the threat model and no gate for ethics or consent.

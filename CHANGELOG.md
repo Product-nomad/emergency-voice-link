@@ -2,7 +2,19 @@
 
 All notable user-visible changes. Format: [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased] — 2026-07-30
+## [Unreleased] — 2026-07-30 (latency)
+
+### Changed
+- **Edge function (`elevenlabs-conversation-token`) latency.** The rate-limit
+  DB read and the ElevenLabs token fetch now run concurrently instead of
+  serially, and the rate-limit write no longer blocks the response (handed to
+  `EdgeRuntime.waitUntil`). Removes 1–2 sequential DB round-trips from every
+  cold-path token mint (no cached client-side token).
+- **Call-setup latency now reported to GA** (`call_latency` event: token-ready
+  and WebRTC-connected timings, both measured from dial), not just logged to
+  the browser console.
+
+## [Unreleased] — 2026-07-30 (SEO/traffic audit)
 
 ### Fixed
 - **`999callbuddy.com` self-canonicalisation bug.** `SeoCanonical.tsx` and

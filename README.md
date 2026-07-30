@@ -89,13 +89,13 @@ This project is a free, public tool aimed at children. It carries the same gover
 | Frame | ✅ complete | Threat model, this README, audience and scope defined. |
 | Data | 🔴 loopback | Vercel Analytics now consent-gated (2026-07-30, closes R5-prime). COPPA/AdSense assurance in Privacy.tsx still contradicts THREAT_MODEL.md. |
 | Pipeline | 🔴 loopback | No CI/CD pipeline (no GitHub Actions). No pre-commit hooks. Bun lockfile may not be used in production Vercel builds. |
-| Build | 🔴 loopback | TypeScript strict mode disabled (`strict: false`). Dead dependencies (`@tanstack/react-query`, `@elevenlabs/client`, 43 unused shadcn/ui components). CORS allowlist uses substring-match, not exact-match. |
+| Build | 🔴 loopback | TypeScript strict mode disabled (`strict: false`). Dead dependencies (`@tanstack/react-query`, 43 unused shadcn/ui components). `@elevenlabs/client` looked dead (unimported in `src/`) but isn't — `@11labs/react`'s compiled bundle imports it directly at runtime, undeclared in that package's own `package.json`; confirmed 2026-07-30 by an actual `vite build` failure when removed, not caught by `tsc --noEmit`. CORS allowlist uses substring-match, not exact-match. |
 | Validate | 🔴 loopback | Seed test suite (13 tests, utilities only). 4/4 named test-plan targets (state machine, rate-limit math, scenario routing, prompt construction) undelivered. Test runner (`tsx`) not available in current host environment. |
 | Operate | ✅ live (degraded) | Deployed across three domains. `999callbuddy.com` voice feature broken — absent from CORS allowlist, returns `{"error":"Unauthorized origin"}` (fix in PR #3, pending deploy). `999callbuddy.com` was also self-canonicalising to `911callsimulator.com` in all SEO surfaces — fixed 2026-07-30, but needs `VITE_SITE_URL` seeded on each Vercel project (see table above) before `sitemap.xml` generation takes effect. No real-browser uptime monitoring. |
 
 ### Outcome metrics
 
-1. **First-response latency.** Dispatcher's first audible response < 800ms from end-of-child-utterance. Currently ad-hoc — formal measurement pending. *(Validate-phase debt.)*
+1. **First-response latency.** Dispatcher's first audible response < 800ms from end-of-child-utterance. Still ad-hoc — formal measurement pending. *(Validate-phase debt.)* **Related but distinct metric now measured (2026-07-30):** call-*setup* latency (dial → token ready, dial → WebRTC connected) is reported to GA as a `call_latency` event (`src/utils/googleAds.ts`) instead of only `console.log`. This covers time-to-connect, not the per-utterance dispatcher response time the metric above describes — that still needs instrumentation on the ElevenLabs agent side.
 2. **Scenario completion rate.** Child reaches end-of-call feedback in ≥ 70% of started sessions. Tracked via Google Analytics.
 3. **Cost per session.** ElevenLabs spend / completed session ≤ £0.05 (sets the rate-limit calibration in the Edge Function). Verified at month-end against ElevenLabs billing.
 
