@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
-import { useConversation } from '@11labs/react';
+import { useConversation } from '@elevenlabs/react';
 import { useRingingSound } from './useRingingSound';
 import { getCachedToken, prefetchToken, clearTokenCache } from '@/services/tokenPrefetch';
 import { formatDuration } from '@/utils/duration';
@@ -24,6 +24,10 @@ interface UseEmergencyCallReturn {
  * Custom hook that encapsulates all emergency call logic
  * Handles ElevenLabs conversation, microphone access, and call state
  * Implements "Ring-then-Connect" flow with WebRTC for lowest latency
+ *
+ * Must be rendered under a <ConversationProvider> (mounted in App.tsx) —
+ * @elevenlabs/react's useConversation requires one, unlike the deprecated
+ * @11labs/react it replaced.
  */
 export const useEmergencyCall = ({
   onCallEnd,
@@ -35,12 +39,23 @@ export const useEmergencyCall = ({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const { startRinging, stopRinging } = useRingingSound();
 
+  // Latency instrumentation. startSession() no longer returns a promise that
+  // resolves on connect (see below), so "connected" timing has to be read
+  // inside the async onConnect callback instead of after an awaited call —
+  // these refs carry the dial-start time and token-ready time across to it.
+  const startTimeRef = useRef<number>(0);
+  const tokenMsRef = useRef<number>(0);
+
   const conversation = useConversation({
     onConnect: () => {
       // Agent WebRTC connected - stop ringing and start timer
       stopRinging();
       setCallPhase('connected');
-      
+
+      const connectedMs = performance.now() - startTimeRef.current;
+      console.log(`[EmergencyCall] Connected in ${connectedMs.toFixed(0)}ms`);
+      trackCallLatency(tokenMsRef.current, connectedMs);
+
       // Start the call timer only when truly connected
       timerRef.current = setInterval(() => {
         setCallDuration((prev) => prev + 1);
@@ -61,8 +76,8 @@ export const useEmergencyCall = ({
         setCallPhase('connected');
       }
     },
-    onError: (error) => {
-      console.error('[EmergencyCall] Conversation error:', error);
+    onError: (message, context) => {
+      console.error('[EmergencyCall] Conversation error:', message, context);
       stopRinging();
       setCallPhase('error');
       setConnectionError('Connection issue occurred');
@@ -75,8 +90,7 @@ export const useEmergencyCall = ({
   });
 
   const startCall = useCallback(async (): Promise<void> => {
-    const startTime = performance.now();
-    let tokenMs = 0;
+    startTimeRef.current = performance.now();
 
     try {
       // Start ringing immediately for perceived latency reduction
@@ -85,7 +99,7 @@ export const useEmergencyCall = ({
 
       // Check for pre-fetched token first (from warmup during dialing)
       let token = getCachedToken();
-      
+
       // Request microphone permission immediately
       const micPromise = navigator.mediaDevices.getUserMedia({
         audio: {
@@ -112,25 +126,23 @@ export const useEmergencyCall = ({
         throw new Error('connection_failed');
       }
 
-      const tokenTime = performance.now();
-      tokenMs = tokenTime - startTime;
-      console.log(`[EmergencyCall] Token ready in ${tokenMs.toFixed(0)}ms`);
+      tokenMsRef.current = performance.now() - startTimeRef.current;
+      console.log(`[EmergencyCall] Token ready in ${tokenMsRef.current.toFixed(0)}ms`);
 
       // Transition to connecting phase
       setCallPhase('connecting');
 
-      // Start the conversation with WebRTC for lowest latency
-      await conversation.startSession({
+      // Start the conversation with WebRTC for lowest latency. Unlike the
+      // previous SDK, startSession() is fire-and-forget: it never returns a
+      // promise or throws for connection failures. Success is reported via
+      // onConnect above, failure via onError — both registered on the hook.
+      conversation.startSession({
         conversationToken: token,
         connectionType: 'webrtc',
       });
-
-      const connectedTime = performance.now();
-      const connectedMs = connectedTime - startTime;
-      console.log(`[EmergencyCall] Connected in ${connectedMs.toFixed(0)}ms`);
-      trackCallLatency(tokenMs, connectedMs);
-
     } catch (error) {
+      // Only mic-permission and token-fetch failures land here now —
+      // connection failures are handled by the onError callback instead.
       stopRinging();
       let errorMessage = 'Unable to connect. Please try again.';
 
@@ -169,7 +181,7 @@ export const useEmergencyCall = ({
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
-    await conversation.endSession();
+    conversation.endSession();
     onCallEnd();
   }, [conversation, onCallEnd, stopRinging]);
 
