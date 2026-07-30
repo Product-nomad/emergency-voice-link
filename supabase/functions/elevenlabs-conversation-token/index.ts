@@ -90,18 +90,38 @@ serve(async (req) => {
     const windowStart = new Date();
     windowStart.setMinutes(windowStart.getMinutes() - RATE_LIMIT_WINDOW_MINUTES);
 
-    const { count, error: countError } = await supabase
-      .from('elevenlabs_rate_limit')
-      .select('*', { count: 'exact', head: true })
-      .eq('ip_hash', ipHash)
-      .gte('requested_at', windowStart.toISOString());
+    // Run the rate-limit read and the ElevenLabs token fetch concurrently
+    // rather than serially — minting a token costs nothing on its own (spend
+    // only happens once a conversation actually starts), so there's no cost
+    // risk in fetching it before the rate-limit verdict is known. If the
+    // caller turns out to be over the limit, the fetched token is simply
+    // discarded below. This removes one DB round-trip from the latency-
+    // critical path for every request under the limit (the common case).
+    const [rateLimitResult, elevenLabsResponse] = await Promise.all([
+      supabase
+        .from('elevenlabs_rate_limit')
+        .select('*', { count: 'exact', head: true })
+        .eq('ip_hash', ipHash)
+        .gte('requested_at', windowStart.toISOString()),
+      fetch(
+        `https://api.elevenlabs.io/v1/convai/conversation/token?agent_id=${ELEVENLABS_AGENT_ID}`,
+        {
+          method: 'GET',
+          headers: {
+            'xi-api-key': ELEVENLABS_API_KEY,
+          },
+        }
+      ),
+    ]);
+
+    const { count, error: countError } = rateLimitResult;
 
     if (countError) {
       // Log internally but don't expose to client
       console.error('Rate limit check failed');
     }
 
-    // Enforce rate limit
+    // Enforce rate limit (discards the already-fetched ElevenLabs token)
     if (count !== null && count >= RATE_LIMIT_MAX_REQUESTS) {
       return new Response(
         JSON.stringify({ error: 'Too many requests. Please wait before trying again.' }),
@@ -112,38 +132,40 @@ serve(async (req) => {
       );
     }
 
-    // Record this request for rate limiting
-    const { error: insertError } = await supabase
-      .from('elevenlabs_rate_limit')
-      .insert({ ip_hash: ipHash });
-
-    if (insertError) {
-      console.error('Failed to record rate limit');
-    }
-
-    // Cleanup old entries periodically (1 in 100 requests)
-    if (Math.random() < 0.01) {
-      supabase.rpc('cleanup_old_elevenlabs_rate_limits').then(() => {});
-    }
-
-    // Request a WebRTC token for lower latency (preferred over WebSocket signed URL)
-    const response = await fetch(
-      `https://api.elevenlabs.io/v1/convai/conversation/token?agent_id=${ELEVENLABS_AGENT_ID}`,
-      {
-        method: 'GET',
-        headers: {
-          'xi-api-key': ELEVENLABS_API_KEY,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('ElevenLabs API error:', response.status, errorText);
+    if (!elevenLabsResponse.ok) {
+      const errorText = await elevenLabsResponse.text();
+      console.error('ElevenLabs API error:', elevenLabsResponse.status, errorText);
       throw new Error('Unable to initialize conversation');
     }
 
-    const data = await response.json();
+    const data = await elevenLabsResponse.json();
+
+    // Record this request for rate limiting. Not awaited before responding —
+    // this is bookkeeping for future requests, not something the current
+    // response depends on — but the isolate can be frozen the instant the
+    // response is returned, so the write is handed to EdgeRuntime.waitUntil
+    // to guarantee it actually completes rather than racing shutdown.
+    const insertPromise = supabase
+      .from('elevenlabs_rate_limit')
+      .insert({ ip_hash: ipHash })
+      .then(({ error: insertError }) => {
+        if (insertError) console.error('Failed to record rate limit');
+      });
+
+    // Cleanup old entries periodically (1 in 100 requests)
+    const cleanupPromise =
+      Math.random() < 0.01
+        ? supabase.rpc('cleanup_old_elevenlabs_rate_limits').then(() => {})
+        : Promise.resolve();
+
+    // @ts-expect-error EdgeRuntime is a Supabase Edge Functions (Deno Deploy) global, not in std lib types
+    if (typeof EdgeRuntime !== 'undefined') {
+      // @ts-expect-error see above
+      EdgeRuntime.waitUntil(Promise.all([insertPromise, cleanupPromise]));
+    } else {
+      // Local dev (Supabase CLI) fallback: still don't block the response on these.
+      Promise.all([insertPromise, cleanupPromise]).catch(() => {});
+    }
 
     // Return the token for WebRTC connection (lower latency than WebSocket)
     return new Response(JSON.stringify({ token: data.token }), {

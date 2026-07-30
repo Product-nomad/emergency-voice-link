@@ -4,6 +4,7 @@ import { useConversation } from '@11labs/react';
 import { useRingingSound } from './useRingingSound';
 import { getCachedToken, prefetchToken, clearTokenCache } from '@/services/tokenPrefetch';
 import { formatDuration } from '@/utils/duration';
+import { trackCallLatency } from '@/utils/googleAds';
 
 type CallPhase = 'ringing' | 'connecting' | 'connected' | 'error';
 
@@ -75,7 +76,8 @@ export const useEmergencyCall = ({
 
   const startCall = useCallback(async (): Promise<void> => {
     const startTime = performance.now();
-    
+    let tokenMs = 0;
+
     try {
       // Start ringing immediately for perceived latency reduction
       setCallPhase('ringing');
@@ -111,7 +113,8 @@ export const useEmergencyCall = ({
       }
 
       const tokenTime = performance.now();
-      console.log(`[EmergencyCall] Token ready in ${(tokenTime - startTime).toFixed(0)}ms`);
+      tokenMs = tokenTime - startTime;
+      console.log(`[EmergencyCall] Token ready in ${tokenMs.toFixed(0)}ms`);
 
       // Transition to connecting phase
       setCallPhase('connecting');
@@ -123,8 +126,10 @@ export const useEmergencyCall = ({
       });
 
       const connectedTime = performance.now();
-      console.log(`[EmergencyCall] Connected in ${(connectedTime - startTime).toFixed(0)}ms`);
-      
+      const connectedMs = connectedTime - startTime;
+      console.log(`[EmergencyCall] Connected in ${connectedMs.toFixed(0)}ms`);
+      trackCallLatency(tokenMs, connectedMs);
+
     } catch (error) {
       stopRinging();
       let errorMessage = 'Unable to connect. Please try again.';
