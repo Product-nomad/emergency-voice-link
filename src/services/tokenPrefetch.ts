@@ -1,5 +1,3 @@
-import { supabase } from '@/integrations/supabase/client';
-
 interface TokenCache {
   token: string;
   fetchedAt: number;
@@ -30,12 +28,11 @@ export const prefetchToken = async (): Promise<string | null> => {
   fetchPromise = (async () => {
     try {
       console.log('[TokenPrefetch] Fetching new token...');
-      const { data, error } = await supabase.functions.invoke(
-        'elevenlabs-conversation-token'
-      );
+      const response = await fetch('/api/elevenlabs-conversation-token');
+      const data = await response.json();
 
-      if (error || !data?.token) {
-        console.error('[TokenPrefetch] Failed to fetch token:', error);
+      if (!response.ok || !data?.token) {
+        console.error('[TokenPrefetch] Failed to fetch token:', data?.error);
         return null;
       }
 

@@ -2,6 +2,20 @@
 
 All notable user-visible changes. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased] — 2026-07-30 (drop Supabase from the call path)
+
+### Changed
+- **Token minting moved from a Supabase Edge Function to a Vercel Edge
+  Function** (`api/elevenlabs-conversation-token.ts`). Same domain as the
+  frontend now, so the request is same-origin — the CORS `ALLOWED_ORIGINS`
+  allowlist is gone entirely, along with the bug class it caused. Requires a
+  **new ElevenLabs API key** and `ELEVENLABS_API_KEY`/`ELEVENLABS_AGENT_ID`
+  set as plain (non-`VITE_`) env vars on each Vercel project.
+- **DB-backed rate limiting removed**, not replaced. ElevenLabs' own
+  account-level spend cap is now the sole abuse backstop. Deliberate
+  simplification for a free, low-traffic tool — see `DECISIONS.md`.
+- Supabase is now scoped to `/feedback` message storage only.
+
 ## [Unreleased] — 2026-07-30 (ElevenLabs SDK migration)
 
 ### Changed
