@@ -7,6 +7,8 @@ const ALLOWED_ORIGINS = [
   'https://www.911callsimulator.com',
   'https://999callsimulator.com',
   'https://www.999callsimulator.com',
+  'https://999callbuddy.com',
+  'https://www.999callbuddy.com',
   'https://emergency-voice-link.lovable.app',
   '.lovableproject.com',  // Lovable project preview URLs
   '.lovable.app',         // Lovable published URLs
