@@ -26,3 +26,19 @@ export const trackCallLatency = (tokenMs: number, connectedMs: number) => {
     });
   }
 };
+
+/**
+ * Reports the actual outcome metric from README ("dispatcher's first
+ * audible response < 800ms from end-of-child-utterance") as a GA event.
+ * This is distinct from trackCallLatency above, which only covers call
+ * *setup* (dial to connected) — this measures turn-taking latency inside
+ * an already-connected conversation, which is mostly ElevenLabs agent
+ * pipeline time (STT -> LLM -> TTS), not anything this app controls.
+ */
+export const trackAgentResponseLatency = (latencyMs: number) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'agent_response_latency', {
+      response_ms: Math.round(latencyMs),
+    });
+  }
+};

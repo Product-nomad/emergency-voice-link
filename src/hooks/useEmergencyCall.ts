@@ -4,7 +4,12 @@ import { useConversation } from '@elevenlabs/react';
 import { useRingingSound } from './useRingingSound';
 import { getCachedToken, prefetchToken, clearTokenCache } from '@/services/tokenPrefetch';
 import { formatDuration } from '@/utils/duration';
-import { trackCallLatency } from '@/utils/googleAds';
+import { trackCallLatency, trackAgentResponseLatency } from '@/utils/googleAds';
+
+// VAD score above this is treated as "the child is actively speaking".
+// ElevenLabs doesn't document a canonical threshold for this score; 0.5 is
+// a reasonable midpoint and only affects instrumentation, not call behaviour.
+const VAD_SPEECH_THRESHOLD = 0.5;
 
 type CallPhase = 'ringing' | 'connecting' | 'connected' | 'error';
 
@@ -46,7 +51,31 @@ export const useEmergencyCall = ({
   const startTimeRef = useRef<number>(0);
   const tokenMsRef = useRef<number>(0);
 
+  // Per-utterance response-latency instrumentation (README outcome metric
+  // #1: "dispatcher's first audible response < 800ms from end-of-child-
+  // utterance"). lastSpeechEndRef tracks the last moment VAD saw the child
+  // actively talking — once it stops updating, that timestamp is "end of
+  // utterance". awaitingResponseRef gates onAudio so only the *first* audio
+  // chunk of the agent's next reply is measured, not every chunk of a
+  // streamed response.
+  const lastSpeechEndRef = useRef<number | null>(null);
+  const awaitingResponseRef = useRef(false);
+
   const conversation = useConversation({
+    onVadScore: ({ vadScore }) => {
+      if (vadScore > VAD_SPEECH_THRESHOLD) {
+        lastSpeechEndRef.current = performance.now();
+        awaitingResponseRef.current = true;
+      }
+    },
+    onAudio: () => {
+      if (awaitingResponseRef.current && lastSpeechEndRef.current !== null) {
+        const responseMs = performance.now() - lastSpeechEndRef.current;
+        console.log(`[EmergencyCall] Agent response latency: ${responseMs.toFixed(0)}ms`);
+        trackAgentResponseLatency(responseMs);
+        awaitingResponseRef.current = false;
+      }
+    },
     onConnect: () => {
       // Agent WebRTC connected - stop ringing and start timer
       stopRinging();
